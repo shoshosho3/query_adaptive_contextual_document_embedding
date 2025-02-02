@@ -37,7 +37,7 @@ def tokenize(tokenizer, documents: list, prefix: str, device, max_length: int = 
         :param prefix: Prefix to add to each document.
     """
     tokenized_docs = []
-    for doc in tqdm(documents, desc="Tokenizing"):
+    for doc in tqdm(documents[:1], desc="Tokenizing"):
         tokenized_docs.append(tokenizer(
             prefix + doc,
             truncation=True,
