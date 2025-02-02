@@ -11,11 +11,11 @@ TEST = "test"
 
 def embed_documents(tokenized_docs, model, dataset_embeddings, description):
     """Embed the tokenized documents using the second stage model."""
+    print(tokenized_docs)
+    print(0/0)
     doc_embeddings_list = []
     with torch.no_grad():
         for tokenized_doc in tqdm(tokenized_docs, desc=description):
-            print(tokenized_doc)
-            print(0/0)
             doc_embeddings = model.second_stage_model(
                 input_ids=tokenized_doc["input_ids"],
                 attention_mask=tokenized_doc["attention_mask"],
