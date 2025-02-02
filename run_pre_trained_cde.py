@@ -6,6 +6,9 @@ from pre_trained_cde.run_stage_2 import run_stage_2
 from pre_trained_cde.save_pre_trained import save
 import transformers
 import torch
+from warnings import filterwarnings
+
+filterwarnings("ignore")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
