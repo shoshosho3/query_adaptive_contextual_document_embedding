@@ -71,11 +71,10 @@ def run_stage_1(corpus, model, tokenizer, device):
     minicorpus_docs = get_minicorpus(corpus, size=model.config.transductive_corpus_size)
 
     # Step 2: Tokenize the sampled documents
-    tokenized_docs = tokenize(tokenizer, minicorpus_docs, DOCUMENT_PREFIX)
+    tokenized_docs = tokenize(tokenizer, minicorpus_docs, device, DOCUMENT_PREFIX)
 
     # Step 3: Move model and tokenized data to the designated device
     model.to(device)
-    tokenized_docs = tokenized_docs.to(device)
 
     # Step 4: Generate embeddings using the model
     embeddings = generate_embeddings(model, tokenized_docs, device)

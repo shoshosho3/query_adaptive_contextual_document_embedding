@@ -20,7 +20,7 @@ def process_ex_document(ex: dict) -> dict:
     return ex
 
 
-def tokenize(tokenizer, documents: list, prefix: str, max_length: int = 512) -> BatchEncoding:
+def tokenize(tokenizer, documents: list, prefix: str, device, max_length: int = 512) -> list:
     """
     Tokenizes a list of documents for input into a model.
 
@@ -38,11 +38,11 @@ def tokenize(tokenizer, documents: list, prefix: str, max_length: int = 512) -> 
     """
     tokenized_docs = []
     for doc in tqdm(documents, desc="Tokenizing"):
-        tokenizer(
+        tokenized_docs.append(tokenizer(
             prefix + doc,
             truncation=True,
             padding=True,
             max_length=max_length,
             return_tensors="pt"
-        )
+        ).to(device))
     return tokenized_docs

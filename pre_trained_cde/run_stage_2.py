@@ -40,8 +40,7 @@ def process_corpus(corpus, tokenizer, device):
     """Tokenize the corpus and prepare it for embeddings."""
     corpus_list = list(corpus.items())
     docs = [process_ex_document(doc[1])['text'] for doc in corpus_list]
-    tokenized_docs = tokenize(tokenizer, docs, DOCUMENT_PREFIX)
-    tokenized_docs.to(device)
+    tokenized_docs = tokenize(tokenizer, docs, device, DOCUMENT_PREFIX)
     return tokenized_docs
 
 
