@@ -53,7 +53,7 @@ def generate_embeddings(model, tokenized_docs: transformers.tokenization_utils_b
     return torch.cat(embeddings)
 
 
-def tokenize_1(tokenizer, documents: list, prefix: str, max_length: int = 512) -> list:
+def tokenize_1(tokenizer, documents: list, prefix: str, device, max_length: int = 512) -> list:
     """
     Tokenizes a list of documents for input into a model.
 
@@ -75,7 +75,7 @@ def tokenize_1(tokenizer, documents: list, prefix: str, max_length: int = 512) -
         padding=True,
         max_length=512,
         return_tensors="pt"
-    )
+    ).to(device)
 
 
 def run_stage_1(corpus, model, tokenizer, device):
@@ -96,7 +96,7 @@ def run_stage_1(corpus, model, tokenizer, device):
     minicorpus_docs = get_minicorpus(corpus, size=model.config.transductive_corpus_size)
 
     # Step 2: Tokenize the sampled documents
-    tokenized_docs = tokenize_1(tokenizer, minicorpus_docs, DOCUMENT_PREFIX)
+    tokenized_docs = tokenize_1(tokenizer, minicorpus_docs, DOCUMENT_PREFIX, device)
 
     # Step 3: Move model and tokenized data to the designated device
     model.to(device)
