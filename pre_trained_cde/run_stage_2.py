@@ -39,8 +39,6 @@ def process_and_tokenize_queries(split, tokenizer, dataset_embeddings, stage_mod
 def process_corpus(corpus, tokenizer, device):
     """Tokenize the corpus and prepare it for embeddings."""
     corpus_list = list(corpus.items())
-    print(corpus_list[0])
-    print(0/0)
     docs = [process_ex_document(doc[1])['text'] for doc in corpus_list]
     tokenized_docs = tokenize(tokenizer, docs, DOCUMENT_PREFIX)
     tokenized_docs.to(device)
