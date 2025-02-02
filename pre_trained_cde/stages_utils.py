@@ -39,7 +39,7 @@ def tokenize(tokenizer, documents: list, prefix: str, device, max_length: int = 
     tokenized_docs = []
     for doc in tqdm(documents, desc="Tokenizing"):
         tokenized_docs.append(tokenizer(
-            prefix + doc.cpu(),
+            prefix + doc,
             truncation=True,
             padding=True,
             max_length=max_length,

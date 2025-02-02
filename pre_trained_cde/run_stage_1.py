@@ -71,7 +71,7 @@ def run_stage_1(corpus, model, tokenizer, device):
     minicorpus_docs = get_minicorpus(corpus, size=model.config.transductive_corpus_size)
 
     # Step 2: Tokenize the sampled documents
-    tokenized_docs = tokenize(tokenizer, minicorpus_docs, device, DOCUMENT_PREFIX)
+    tokenized_docs = tokenize(tokenizer, minicorpus_docs, DOCUMENT_PREFIX, device)
 
     # Step 3: Move model and tokenized data to the designated device
     model.to(device)
