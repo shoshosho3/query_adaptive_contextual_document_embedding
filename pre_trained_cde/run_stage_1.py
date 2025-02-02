@@ -2,7 +2,7 @@ import random
 import torch
 import transformers
 from tqdm import tqdm
-from stages_utils import *
+from pre_trained_cde.stages_utils import *
 
 
 def get_minicorpus(corpus, size: int) -> list:
