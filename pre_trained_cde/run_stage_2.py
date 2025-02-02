@@ -11,7 +11,7 @@ TEST = "test"
 
 def embed_documents(tokenized_docs, model, dataset_embeddings, description):
     """Embed the tokenized documents using the second stage model."""
-    print(tokenized_docs[0]["input_ids"])
+    print(tokenized_docs['input_ids'])
     doc_embeddings_list = []
     with torch.no_grad():
         for tokenized_doc in tqdm(tokenized_docs, desc=description):
