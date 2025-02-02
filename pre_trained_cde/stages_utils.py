@@ -36,10 +36,6 @@ def tokenize(tokenizer, documents: list, prefix: str, device, max_length: int = 
         :param documents:
         :param prefix: Prefix to add to each document.
     """
-    try:
-        documents = documents[:1]
-    except:
-        pass
 
     tokenized_docs = []
     for doc in tqdm(documents, desc="Tokenizing"):
