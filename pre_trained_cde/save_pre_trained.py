@@ -1,6 +1,12 @@
 import pickle
 import torch
+import os
 
+
+def check_directory(directory):
+
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
 
 def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, index):
     """
@@ -18,6 +24,9 @@ def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, i
         Four pickle files for document, training, validation, and test embeddings named
         using the dataset name and index.
     """
+
+    check_directory(dataset_name)
+
     with open(f'{dataset_name}/doc_embeddings_{dataset_name}_{index}.pkl', 'wb') as f:
         pickle.dump(docs, f)
 
