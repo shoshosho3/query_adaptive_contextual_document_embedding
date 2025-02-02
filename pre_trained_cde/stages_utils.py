@@ -36,10 +36,13 @@ def tokenize(tokenizer, documents: list, prefix: str, max_length: int = 512) -> 
         :param documents:
         :param prefix: Prefix to add to each document.
     """
-    return tokenizer(
-        [prefix + doc for doc in tqdm(documents, desc="Tokenizing")],
-        truncation=True,
-        padding=True,
-        max_length=max_length,
-        return_tensors="pt"
-    )
+    tokenized_docs = []
+    for doc in tqdm(documents, desc="Tokenizing"):
+        tokenizer(
+            prefix + doc,
+            truncation=True,
+            padding=True,
+            max_length=max_length,
+            return_tensors="pt"
+        )
+    return tokenized_docs
