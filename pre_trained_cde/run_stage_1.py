@@ -22,7 +22,7 @@ def get_minicorpus(corpus, size: int) -> list:
     random_indices = random.choices(range(len(corpus_list)), k=size)
 
     # Use document processing function to generate titles + text
-    return [process_ex_document(corpus_list[i][1]) for i in random_indices]
+    return [process_ex_document(corpus_list[i][1])['text'] for i in random_indices]
 
 
 def generate_embeddings(model, tokenized_docs: transformers.tokenization_utils_base.BatchEncoding,

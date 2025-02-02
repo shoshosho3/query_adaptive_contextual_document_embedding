@@ -5,7 +5,7 @@ DOCUMENT_PREFIX = "search_document: "
 QUERY_PREFIX = "search_query: "
 
 
-def process_ex_document(ex: dict) -> str:
+def process_ex_document(ex: dict) -> dict:
     """
     Formats a document into a string containing its title and text.
 
@@ -16,7 +16,8 @@ def process_ex_document(ex: dict) -> str:
         str: A combined string of title and text.
     """
 
-    return f"{ex['title']} {ex['text']}"
+    ex["text"] = f"{ex['title']} {ex['text']}"
+    return ex
 
 
 def tokenize(tokenizer, documents: list, prefix: str, max_length: int = 512) -> BatchEncoding:
