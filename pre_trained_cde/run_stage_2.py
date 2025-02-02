@@ -1,4 +1,4 @@
-from stages_utils import *
+from pre_trained_cde.stages_utils import *
 from tqdm import tqdm
 import torch
 import os
