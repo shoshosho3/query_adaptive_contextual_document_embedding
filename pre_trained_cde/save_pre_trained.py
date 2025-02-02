@@ -33,11 +33,11 @@ def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, i
     with open(f'{dataset_name}/query_embeddings_train_{dataset_name}_{index}.pkl', 'wb') as f:
         pickle.dump(train_queries, f)
 
-    if dev_queries:
+    if dev_queries is not None:
         with open(f'{dataset_name}/query_embeddings_dev_{dataset_name}_{index}.pkl', 'wb') as f:
             pickle.dump(dev_queries, f)
 
-    if test_queries:
+    if test_queries is not None:
         with open(f'{dataset_name}/query_embeddings_test_{dataset_name}_{index}.pkl', 'wb') as f:
             pickle.dump(test_queries, f)
 
