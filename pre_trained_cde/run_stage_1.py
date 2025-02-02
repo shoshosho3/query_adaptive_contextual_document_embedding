@@ -22,7 +22,7 @@ def get_minicorpus(corpus, size: int) -> list:
     random_indices = random.choices(range(len(corpus_list)), k=size)
 
     # Use document processing function to generate titles + text
-    print(corpus_list[random_indices[0]][1])
+    print(process_ex_document(corpus_list[random_indices[0]][1]))
     print(0/0)
     return [process_ex_document(corpus_list[i][1])['text'] for i in random_indices]
 
