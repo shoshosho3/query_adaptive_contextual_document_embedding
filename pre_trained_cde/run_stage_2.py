@@ -11,8 +11,6 @@ TEST = "test"
 
 def embed_documents(tokenized_docs, model, dataset_embeddings, description):
     """Embed the tokenized documents using the second stage model."""
-    print(tokenized_docs)
-    print(0/0)
     doc_embeddings_list = []
     with torch.no_grad():
         for tokenized_doc in tqdm(tokenized_docs, desc=description):
@@ -67,6 +65,8 @@ def run_stage_2(corpus, model, tokenizer, device, dataset_embeddings, get_split)
 
     # Process corpus and generate document embeddings.
     tokenized_docs = process_corpus(corpus, tokenizer, device)
+    print(tokenized_docs[0])
+    print(0/0)
     doc_embeddings_list = process_corpus_embeddings(tokenized_docs, model, dataset_embeddings)
 
     # Process train, dev, and test splits
