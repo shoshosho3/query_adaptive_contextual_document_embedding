@@ -22,7 +22,7 @@ def get_split(split_type, dataset_name):
     dataset_path = os.path.join(datasets_dir, dataset_name)
 
 
-    if os.path.isfile(os.path.join(dataset_path, QRELS_PATH, split_type, TSV)):
+    if os.path.isfile(os.path.join(dataset_path, QRELS_PATH, split_type + TSV)):
         return GenericDataLoader(dataset_path).load(split=split_type)
 
     else:
