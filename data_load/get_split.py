@@ -19,11 +19,11 @@ def get_split(split_type, dataset_name):
     """
 
 
-    qrels_path = os.path.join(datasets_dir, dataset_name, QRELS_PATH)
+    dataset_path = os.path.join(datasets_dir, dataset_name)
 
 
-    if os.path.isfile(os.path.join(qrels_path, split_type, TSV)):
-        return GenericDataLoader(qrels_path).load(split=split_type)
+    if os.path.isfile(os.path.join(dataset_path, QRELS_PATH, split_type, TSV)):
+        return GenericDataLoader(dataset_path).load(split=split_type)
 
     else:
         return None
