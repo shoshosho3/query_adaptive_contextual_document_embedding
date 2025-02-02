@@ -24,11 +24,13 @@ def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, i
     with open(f'{dataset_name}/query_embeddings_train_{dataset_name}_{index}.pkl', 'wb') as f:
         pickle.dump(train_queries, f)
 
-    with open(f'{dataset_name}/query_embeddings_dev_{dataset_name}_{index}.pkl', 'wb') as f:
-        pickle.dump(dev_queries, f)
+    if dev_queries:
+        with open(f'{dataset_name}/query_embeddings_dev_{dataset_name}_{index}.pkl', 'wb') as f:
+            pickle.dump(dev_queries, f)
 
-    with open(f'{dataset_name}/query_embeddings_test_{dataset_name}_{index}.pkl', 'wb') as f:
-        pickle.dump(test_queries, f)
+    if test_queries:
+        with open(f'{dataset_name}/query_embeddings_test_{dataset_name}_{index}.pkl', 'wb') as f:
+            pickle.dump(test_queries, f)
 
 
 def normalize(docs):
@@ -84,8 +86,8 @@ def save(docs, train_queries, dev_queries, test_queries, dataset_name):
     # Normalize embeddings
     docs_tensor = normalize(docs)
     train_query_tensor = normalize(train_queries)
-    dev_query_tensor = normalize(dev_queries)
-    test_query_tensor = normalize(test_queries)
+    dev_query_tensor = normalize(dev_queries) if dev_queries else None
+    test_query_tensor = normalize(test_queries) if test_queries else None
 
     # Find last index
     index = find_last_index(dataset_name)
