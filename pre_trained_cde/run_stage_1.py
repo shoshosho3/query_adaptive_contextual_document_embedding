@@ -53,6 +53,31 @@ def generate_embeddings(model, tokenized_docs: transformers.tokenization_utils_b
     return torch.cat(embeddings)
 
 
+def tokenize_1(tokenizer, documents: list, prefix: str, max_length: int = 512) -> list:
+    """
+    Tokenizes a list of documents for input into a model.
+
+    Args:
+        tokenizer: Tokenizer object to process text.
+        documents (list): List of documents as strings.
+        max_length (int): Maximum number of tokens per document (default: 512).
+
+    Returns:
+        dict: A dictionary of PyTorch tensors with tokenized documents.
+        :param max_length:
+        :param tokenizer:
+        :param documents:
+        :param prefix: Prefix to add to each document.
+    """
+    return tokenizer(
+        [prefix + doc for doc in documents],
+        truncation=True,
+        padding=True,
+        max_length=512,
+        return_tensors="pt"
+    )
+
+
 def run_stage_1(corpus, model, tokenizer, device):
     """
     Orchestrates the overall process of sampling a corpus, tokenizing it, and generating embeddings.
@@ -71,7 +96,7 @@ def run_stage_1(corpus, model, tokenizer, device):
     minicorpus_docs = get_minicorpus(corpus, size=model.config.transductive_corpus_size)
 
     # Step 2: Tokenize the sampled documents
-    tokenized_docs = tokenize(tokenizer, minicorpus_docs, DOCUMENT_PREFIX, device)
+    tokenized_docs = tokenize_1(tokenizer, minicorpus_docs, DOCUMENT_PREFIX)
 
     # Step 3: Move model and tokenized data to the designated device
     model.to(device)
