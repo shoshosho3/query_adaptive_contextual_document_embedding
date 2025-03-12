@@ -3,6 +3,8 @@ import torch
 from beir.datasets.data_loader import GenericDataLoader
 import argparse
 from analysis.results_utils import calculate_map
+import models.with_attention as with_attention
+import models.more_positive as more_positive
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
@@ -22,7 +24,7 @@ with open(f'doc_embeddings_{args.dataset}.pkl', 'rb') as f:
 with open(f'query_embeddings_train_{args.dataset}.pkl', 'rb') as f:
     train_query_embeddings_tensor = pickle.load(f)
 
-_, test_queries, test_qrels = GenericDataLoader(data_path).load(split="dev")
+_, test_queries, test_qrels = GenericDataLoader(data_path).load(split="test")
 
 with open(f'query_embeddings_dev_{args.dataset}.pkl', 'rb') as f:
     test_query_embeddings_tensor = pickle.load(f)
@@ -31,17 +33,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 embedding_dim = 768
 hidden_dim = args.hidden_dim
-query_adaptive_model = model(train_query_embeddings_tensor,
-                             doc_embeddings_tensor,
-                             list(queries_train.keys()),
-                             qrels_train,
-                             embedding_dim,
-                             hidden_dim)
+query_adaptive_model = with_attention.QueryAdaptiveCDE(embedding_dim, hidden_dim, num_heads=4)
 
 # Define optimizer and loss function
 optimizer = torch.optim.Adam(query_adaptive_model.parameters(), lr=1e-5)
-criterion = loss_function()
-criterion = criterion.to(device)
 
 
 for i in range(30):
