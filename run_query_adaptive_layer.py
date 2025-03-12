@@ -8,6 +8,7 @@ import models.more_positive as more_positive
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
+parser.add_argument("--index", type=int, required=True, help="Index to check.")
 parser.add_argument("--hidden_dim", type=int, required=True, help="Hidden Dimension For the Model")
 
 args = parser.parse_args()
@@ -18,15 +19,15 @@ data_path = "datasets/" + args.dataset
 corpus, queries_train, qrels_train = GenericDataLoader(data_path).load(split="train")
 corpus_list = list(corpus.items())
 
-with open(f'doc_embeddings_{args.dataset}.pkl', 'rb') as f:
+with open(f'{args.dataset}/doc_embeddings_{args.dataset}_{args.index}.pkl', 'rb') as f:
     doc_embeddings_tensor = pickle.load(f)
 
-with open(f'query_embeddings_train_{args.dataset}.pkl', 'rb') as f:
+with open(f'{args.dataset}/query_embeddings_train_{args.dataset}_{args.index}.pkl', 'rb') as f:
     train_query_embeddings_tensor = pickle.load(f)
 
 _, test_queries, test_qrels = GenericDataLoader(data_path).load(split="test")
 
-with open(f'query_embeddings_dev_{args.dataset}.pkl', 'rb') as f:
+with open(f'{args.dataset}/query_embeddings_dev_{args.dataset}_{args.index}.pkl', 'rb') as f:
     test_query_embeddings_tensor = pickle.load(f)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
