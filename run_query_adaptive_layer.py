@@ -27,7 +27,7 @@ with open(f'{args.dataset}/query_embeddings_train_{args.dataset}_{args.index}.pk
 
 _, test_queries, test_qrels = GenericDataLoader(data_path).load(split="test")
 
-with open(f'{args.dataset}/query_embeddings_dev_{args.dataset}_{args.index}.pkl', 'rb') as f:
+with open(f'{args.dataset}/query_embeddings_test_{args.dataset}_{args.index}.pkl', 'rb') as f:
     test_query_embeddings_tensor = pickle.load(f)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
