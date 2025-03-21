@@ -18,7 +18,6 @@ args = parser.parse_args()
 dataset_name = args.dataset
 
 get_dataset(dataset_name)
-
 get_split = GetSplit(dataset_name)
 
 model = transformers.AutoModel.from_pretrained("jxm/cde-small-v1", trust_remote_code=True)
@@ -31,3 +30,4 @@ docs_tensor, train_tensor, dev_tensor, test_tensor = run_stage_2(get_split.train
                                                                  device, stage_1_embeddings, get_split)
 
 save(docs_tensor, train_tensor, dev_tensor, test_tensor, dataset_name)
+

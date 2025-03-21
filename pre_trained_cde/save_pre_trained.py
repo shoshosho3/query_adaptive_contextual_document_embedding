@@ -4,9 +4,14 @@ import os
 
 
 def check_directory(directory):
-
     if not os.path.isdir(directory):
         os.makedirs(directory)
+
+
+def save_model(model, model_name, dataset_name):
+    with open(f'models/{model_name}_{dataset_name}.pkl', 'wb') as f:
+        pickle.dump(model, f)
+
 
 def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, index):
     """
@@ -92,14 +97,12 @@ def save(docs, train_queries, dev_queries, test_queries, dataset_name):
         2. The last available index for filenames is discovered.
         3. Normalized embeddings are saved into pickle files with the appropriate names.
     """
-    # Normalize embeddings
+
     docs_tensor = normalize(docs)
     train_query_tensor = normalize(train_queries)
     dev_query_tensor = normalize(dev_queries) if dev_queries else None
     test_query_tensor = normalize(test_queries) if test_queries else None
 
-    # Find last index
     index = find_last_index(dataset_name)
 
-    # Save embeddings
     save_pickles(docs_tensor, train_query_tensor, dev_query_tensor, test_query_tensor, dataset_name, index)
