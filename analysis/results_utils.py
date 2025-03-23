@@ -8,6 +8,9 @@ import pickle
 
 def evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
                     test_query_embeddings_tfidf, test_queries, test_qrels, corpus, MultiEmbeddingsQueryAdaptiveCDE):
+
+    print("Evaluating the models...")
+
     with open(f'models/QACDE_{dataset_name}.pkl', 'rb') as f:
         best_query_adaptive_cde_model = pickle.load(f)
 
