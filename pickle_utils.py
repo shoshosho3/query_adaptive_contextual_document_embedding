@@ -8,21 +8,27 @@ def get_queries(args, stage="train", embedding_type=NO_TYPE):
     return train_query_embeddings
 
 
-def open_pickles(args, ):
+def open_pickles(args, for_query_adaptive_cde=True):
     with open(f'{args.dataset}/doc_embeddings_{args.dataset}_{args.index}.pkl', 'rb') as f:
         doc_embeddings = pickle.load(f)
 
     train_query_embeddings = get_queries(args, stage="train")
 
-    train_query_embeddings_bert = get_queries(args, stage="train", embedding_type=BERT)
-
-    train_query_embeddings_tfidf = get_queries(args, stage="train", embedding_type=TFIDF)
-
     test_query_embeddings = get_queries(args, stage="test")
 
-    test_query_embeddings_bert = get_queries(args, stage="test", embedding_type=BERT)
 
-    test_query_embeddings_tfidf = get_queries(args, stage="test", embedding_type=TFIDF)
+    if for_query_adaptive_cde:
 
-    return doc_embeddings, train_query_embeddings, train_query_embeddings_bert, train_query_embeddings_tfidf, \
-        test_query_embeddings, test_query_embeddings_bert, test_query_embeddings_tfidf
+        train_query_embeddings_bert = get_queries(args, stage="train", embedding_type=BERT)
+
+        train_query_embeddings_tfidf = get_queries(args, stage="train", embedding_type=TFIDF)
+
+        test_query_embeddings_bert = get_queries(args, stage="test", embedding_type=BERT)
+
+        test_query_embeddings_tfidf = get_queries(args, stage="test", embedding_type=TFIDF)
+
+        return doc_embeddings, train_query_embeddings, train_query_embeddings_bert, train_query_embeddings_tfidf, \
+            test_query_embeddings, test_query_embeddings_bert, test_query_embeddings_tfidf
+
+    else:
+        return doc_embeddings, train_query_embeddings, test_query_embeddings, None, None, None, None
