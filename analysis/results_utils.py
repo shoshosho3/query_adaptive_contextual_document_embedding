@@ -1,8 +1,39 @@
 import numpy as np
 import torch
+from torch.nn.functional import cosine_similarity
 from tqdm import tqdm
 import torch.nn.functional as F
 from sklearn.metrics import average_precision_score
+import pickle
+
+def evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
+                    test_query_embeddings_tfidf, test_queries, test_qrels, corpus, MultiEmbeddingsQueryAdaptiveCDE):
+    with open(f'models/QACDE_{dataset_name}.pkl', 'rb') as f:
+        best_query_adaptive_cde_model = pickle.load(f)
+
+    with open(f'models/MEQACDE_{dataset_name}.pkl', 'rb') as f:
+        best_multi_embeddings_query_adaptive_cde_model = pickle.load(f)
+
+    for model, name in zip([best_query_adaptive_cde_model, best_multi_embeddings_query_adaptive_cde_model],
+                           ["Query Adaptive CDE", "Multi Embeddings Query Adaptive CDE"]):
+        if isinstance(model, MultiEmbeddingsQueryAdaptiveCDE):
+            map_score = calculate_multi_map(model, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
+                                            test_query_embeddings_tfidf, list(test_queries.keys()), test_qrels,
+                                            list(corpus.keys()))
+
+        else:
+            map_score = calculate_map(model, doc_embeddings, test_query_embeddings,
+                                      list(test_queries.keys()), test_qrels, list(corpus.keys()))
+
+        print(f"MAP Score for the {name} Model on the Test Set of {dataset_name} is: {map_score}")
+
+
+def evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_queries, test_qrels, corpus):
+
+    map_score = calculate_map(None, doc_embeddings, test_query_embeddings,
+                              list(test_queries.keys()), test_qrels, list(corpus.keys()))
+
+    print(f"MAP Score for the Query Adaptive CDE Model on the Test Set of {dataset_name} is: {map_score}")
 
 
 def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids):
@@ -20,9 +51,13 @@ def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, 
     Returns:
         MAP score.
     """
-    model.eval()
+    if model:
+        model.eval()
 
-    device = next(model.parameters()).device
+        device = next(model.parameters()).device
+    else:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     document_embeddings = document_embeddings.to(device)
     query_embeddings = query_embeddings.to(device)
 
@@ -41,7 +76,11 @@ def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, 
                 batch_docs = document_embeddings[i:i + batch_size]
                 batch_query = query_embedding.unsqueeze(0).repeat(len(batch_docs), 1)
 
-                adaptive_doc_embeddings = model(batch_docs, batch_query)
+                if model:
+                    adaptive_doc_embeddings = model(batch_docs, batch_query)
+                else:
+                    adaptive_doc_embeddings = batch_docs
+
                 batch_scores = F.cosine_similarity(query_embedding.unsqueeze(0), adaptive_doc_embeddings, dim=1)
                 similarity_scores.append(batch_scores)
 
