@@ -1,13 +1,8 @@
 import torch
 from beir.datasets.data_loader import GenericDataLoader
-from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
-from analysis.results_utils import evaluate_models, calculate_map, calculate_multi_map
-import models.more_positive as more_positive
+from analysis.results_utils import evaluate_baseline
 from utils.param_utils import get_args
 from pickle_utils import open_pickles
-from consts import *
-from training.training_query_adaptive_layer import train_adaptive_cde
-from pre_trained_cde.save_pre_trained import save_model
 
 
 if __name__ == "__main__":
@@ -26,8 +21,10 @@ if __name__ == "__main__":
     # setting the device - not used at the moment!!!!!
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # getting the different embeddings
+    doc_embeddings_tensor, train_query_embeddings_tensor, train_query_embeddings_tensor_bert, \
+        train_query_embeddings_tensor_tfidf, test_query_embeddings_tensor, test_query_embeddings_tensor_bert, \
+        test_query_embeddings_tensor_tfidf = open_pickles(args)
 
-    # evaluating the models
-    evaluate_models(args.dataset, doc_embeddings_tensor, test_query_embeddings_tensor,
-                    test_query_embeddings_tensor_bert, test_query_embeddings_tensor_tfidf, test_queries, test_qrels,
-                    corpus, MultiEmbeddingsQueryAdaptiveCDE)
+    evaluate_baseline(args.dataset, doc_embeddings_tensor, test_query_embeddings_tensor, test_queries, test_qrels,
+                      corpus)
