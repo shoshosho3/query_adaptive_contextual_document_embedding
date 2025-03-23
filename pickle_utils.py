@@ -31,4 +31,5 @@ def open_pickles(args, for_query_adaptive_cde=True):
             test_query_embeddings, test_query_embeddings_bert, test_query_embeddings_tfidf
 
     else:
-        return doc_embeddings, train_query_embeddings, test_query_embeddings, None, None, None, None
+        return doc_embeddings, train_query_embeddings, None, None, \
+            test_query_embeddings, None, None
