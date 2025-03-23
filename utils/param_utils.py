@@ -15,5 +15,6 @@ def get_args(for_query_adaptive_cde=True):
     if for_query_adaptive_cde:
         parser.add_argument("--hidden_dim", type=int, required=True, help="Hidden Dimension For the Model.")
         parser.add_argument("--epochs", type=int, required=True, help="Number of Epochs for Training Procedure.")
+        parser.add_argument("--seed", type=int, required=True, help="The seed of the program.")
 
     return parser.parse_args()

@@ -14,6 +14,7 @@ if __name__ == "__main__":
 
     # getting the arguments
     args = get_args()
+    torch.manual_seed(args.seed)
 
     # getting the data path
     data_path = "datasets/" + args.dataset
