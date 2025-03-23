@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # getting the different embeddings
     doc_embeddings_tensor, train_query_embeddings_tensor, train_query_embeddings_tensor_bert, \
         train_query_embeddings_tensor_tfidf, test_query_embeddings_tensor, test_query_embeddings_tensor_bert, \
-        test_query_embeddings_tensor_tfidf = open_pickles(args)
+        test_query_embeddings_tensor_tfidf = open_pickles(args, for_query_adaptive_cde=False)
 
     evaluate_baseline(args.dataset, doc_embeddings_tensor, test_query_embeddings_tensor, test_queries, test_qrels,
                       corpus)
