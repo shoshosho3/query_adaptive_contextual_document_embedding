@@ -36,7 +36,7 @@ def evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_
     map_score = calculate_map(None, doc_embeddings, test_query_embeddings,
                               list(test_queries.keys()), test_qrels, list(corpus.keys()))
 
-    print(f"MAP Score for the Query Adaptive CDE Model on the Test Set of {dataset_name} is: {map_score}")
+    print(f"MAP Score for the CDE Model on the Test Set of {dataset_name} is: {map_score}")
 
 
 def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids):
