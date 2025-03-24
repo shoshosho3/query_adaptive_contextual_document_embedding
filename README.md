@@ -16,8 +16,8 @@
 </p>
 
 <h1 align="center">
-  <img src="https://github.com/tombijaoui/Sequential-Decision-Making-Project/blob/main/pictures_MAB/Crazy%20Squid%20MAB.png" alt="Crazy Squid MAB" height="200">
-  <img src="https://github.com/tombijaoui/Sequential-Decision-Making-Project/blob/main/pictures_MAB/MAB%20Theory.png" alt="MAB Theory" height="200">
+  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/pictures_QACDE/IR%Logo%201.png" alt="IR Logo 1" height="200">
+  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/pictures_QACDE/IR%Logo%202.png" alt="IR Logo 2" height="200">
 </h1>
 
 ---
