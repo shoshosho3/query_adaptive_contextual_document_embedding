@@ -16,8 +16,8 @@
 </p>
 
 <h1 align="center">
-  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/pictures_QACDE/IR%Logo%201.png" alt="IR Logo 1" height="200">
-  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/pictures_QACDE/IR%Logo%202.png" alt="IR Logo 2" height="200">
+  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/blob/main/pictures_QACDE/IR_Logo_1.png" alt="IR Logo 1" height="200">
+  <img src="https://github.com/shoshosho3/query_adaptive_contextual_document_embedding/blob/main/pictures_QACDE/IR_Logo_2.png" alt="IR Logo 2" height="200">
 </h1>
 
 ---
