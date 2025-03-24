@@ -2,13 +2,28 @@ import numpy as np
 import torch
 from torch.nn.functional import cosine_similarity
 from tqdm import tqdm
-from models.with_attention import MultiEmbeddingsQueryAdaptiveCDE
+from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 import torch.nn.functional as F
 from sklearn.metrics import average_precision_score
 import pickle
 
-def evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
-                    test_query_embeddings_tfidf, test_queries, test_qrels, corpus):
+def evaluate_models(dataset_name: str, doc_embeddings: torch.Tensor, test_query_embeddings: torch.Tensor,
+                    test_query_embeddings_bert: torch.Tensor, test_query_embeddings_tfidf: torch.Tensor,
+                    test_queries: list, test_qrels: dict, corpus: dict) -> None:
+
+    """
+    Loads and evaluates our query adaptive models.
+
+    Args:
+        dataset_name: Name of the dataset.
+        doc_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        test_query_embeddings: Tensor of test query embeddings by CDE method of shape(num_queries, embedding_dim).
+        test_query_embeddings_bert: Tensor of test query embeddings by BERT method of shape (num_queries, embedding_dim).
+        test_query_embeddings_tfidf: Tensor of test query embeddings by TF-IDF method of shape (num_queries, embeddings_dim).
+        test_queries: List of query IDs.
+        test_qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
+        corpus: Dictionary of shape {doc_id: {title: doc_title, text: doc_text}}.
+    """
 
     print("Evaluating the models...")
 
@@ -32,7 +47,19 @@ def evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_qu
         print(f"MAP Score for the {name} Model on the Test Set of {dataset_name} is: {map_score}")
 
 
-def evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_queries, test_qrels, corpus):
+def evaluate_baseline(dataset_name: str, doc_embeddings: torch.Tensor, test_query_embeddings: torch, test_queries: list,
+                      test_qrels: dict, corpus: dict) -> None:
+    """
+    Calculates and prints the Mean Average Precision (MAP) of the baseline model.
+
+    Args:
+        dataset_name: Name of the dataset.
+        doc_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        test_query_embeddings: Tensor of test query embeddings by CDE method of shape(num_queries, embedding_dim).
+        test_queries: List of query IDs.
+        test_qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
+        corpus: Dictionary of shape {doc_id: {title: doc_title, text: doc_text}}.
+    """
 
     map_score = calculate_map(None, doc_embeddings, test_query_embeddings,
                               list(test_queries.keys()), test_qrels, list(corpus.keys()))
@@ -40,14 +67,15 @@ def evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_
     print(f"MAP Score for the CDE Model on the Test Set of {dataset_name} is: {map_score}")
 
 
-def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids):
+def calculate_map(model: QueryAdaptiveCDE, document_embeddings: torch.Tensor, query_embeddings:torch.Tensor,
+                  queries: list, qrels: dict, doc_ids: list) -> float:
     """
-    Calculate Mean Average Precision (MAP) for the query-adaptive model.
+    Calculate Mean Average Precision (MAP) for the query-adaptive and the baseline model.
 
     Args:
-        model: Trained query-adaptive model.
-        document_embeddings: Tensor of shape (num_docs, embedding_dim).
-        query_embeddings: Tensor of shape (num_queries, embedding_dim).
+        model: The trained query adaptive model.
+        document_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        query_embeddings: Tensor of query embeddings by CDE method of shape (num_queries, embedding_dim).
         queries: List of query IDs.
         qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
         doc_ids: List of document IDs corresponding to document_embeddings.
@@ -104,8 +132,26 @@ def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, 
     return map_score
 
 
-def calculate_multi_map(model, document_embeddings, query_embeddings, query_embeddings_bert, query_embeddings_tfidf,
-                        queries, qrels, doc_ids):
+def calculate_multi_map(model: MultiEmbeddingsQueryAdaptiveCDE, document_embeddings: torch.Tensor,
+                        query_embeddings: torch.Tensor, query_embeddings_bert: torch.Tensor, query_embeddings_tfidf:torch.Tensor,
+                        queries: list, qrels: dict, doc_ids: list) -> float:
+    """
+        Calculate Mean Average Precision (MAP) for the multi-embeddings-query adaptive model.
+
+        Args:
+            model: Trained multi-embeddings-query-adaptive model.
+            document_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+            query_embeddings: Tensor of query embeddings by the CDE method of shape (num_queries, embedding_dim).
+            query_embeddings_bert: Tensor of query embeddings by the BERT method of shape (num_queries, embedding_dim).
+            query_embeddings_tfidf: Tensor of query embeddings by the TF-IDF method of shape (num_queries, embedding_dim).
+            queries: List of query IDs.
+            qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
+            doc_ids: List of document IDs corresponding to document_embeddings.
+
+        Returns:
+            MAP score.
+        """
+
     model.eval()
 
     device = next(model.parameters()).device

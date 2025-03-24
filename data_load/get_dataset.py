@@ -8,11 +8,14 @@ BEIR_URL = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{
 datasets_dir = os.path.join(os.path.dirname(__file__), "..", "datasets")
 
 
-def does_exist(dataset_name: str):
+def does_exist(dataset_name: str) -> bool:
     """
     Checks if a dataset exists in the datasets directory.
-    :param dataset_name: a string representing the name of the dataset
-    :return: True if the dataset exists, False otherwise
+    Args:
+        dataset_name: String representing the name of the dataset.
+
+    Returns:
+         True if the dataset exists, False otherwise.
     """
 
     dataset = os.path.join(datasets_dir, dataset_name)
@@ -22,18 +25,19 @@ def does_exist(dataset_name: str):
 def download_and_store(dataset_name: str) -> None:
     """
     Downloads a dataset from the BEIR datasets repository and stores it in the datasets directory.
-    :param dataset_name: a string representing the name of the dataset to download
+    Args:
+         dataset_name: String representing the name of the dataset to download.
     """
 
     url = BEIR_URL.format(dataset_name)
     util.download_and_unzip(url, datasets_dir)
 
 
-
 def get_dataset(dataset_name:str) -> None:
     """
     Downloads a dataset from the BEIR datasets repository.
-    :param dataset_name: a string representing the name of the dataset to download
+    Args:
+         dataset_name: String representing the name of the dataset to download.
     """
 
     if does_exist(dataset_name):
