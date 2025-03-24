@@ -6,7 +6,7 @@
 
 <p align="center">
   <em>
-    Query Adaptive Contextual Document Embedders
+    Query Adaptive Contextual Document Embedding
   </em>
 </p>
 
@@ -25,9 +25,9 @@
 <details open>
 <summary><strong>Table of Contents</strong> ⚙️</summary>
 
-1. [Link of the Article](#link-of-the-article)
+1. [About the Article](#link-of-the-article)
 2. [Project Overview](#project-overview)  
-3. [About the code](#about-the-code)  
+3. [About the code](#about-the-code)
 4. [Implemented Classes](#implemented-classes)
 5. [Running Instructions](#running-instructions)  
 6. [Results & Comments](#results-&-comments)  
@@ -36,13 +36,17 @@
 
 ---
 
-## Link of the article
-Our project and implementation is based on the following article:
+## About the article
+Our project is an extension on the following article:
 <blockquote>
-  <a href="https://proceedings.neurips.cc/paper_files/paper/2019/hash/88fee0421317424e4469f33a48f50cb0-Abstract.html">Blocking Bandits</a> by Soumya Basu, Rajat Sen, Sujay Sanghavi and Sanjay Shakkottai.</blockquote>
+  <a href="https://arxiv.org/abs/2410.02525">Contextual Document Embedders</a> by John X. Morris and Alexander M. Rush.</blockquote>
+
+The article "Contextual Document Embeddings" by John X. Morris and Alexander M. Rush from Cornell University proposes a method to improve document embeddings by incorporating context from surrounding documents. Traditional embeddings, which rely solely on the individual document, can be insufficient for highly specific information retrieval tasks. This paper addresses this by incorporating neighboring documents into the embedding process, making the representation more context-aware. The authors introduce a contextual training objective and an architecture that explicitly encodes information from neighboring documents, demonstrating improved performance in various scenarios.
 
 ## Project Overview
-Blocking Bandits represent a new variation in the multi-armed bandit (MAB) problem, where each arm, once played, becomes unavailable or blocked for a certain number of time slots before it can be played again. This models real-world scenarios such as job scheduling, resource allocation where actions or resources cannot be reused immediately due to limitations. Blocking bandits introduce significant complexity into decision-making algorithms, particularly in balancing exploration and exploitation. Traditional MAB problems focus on maximizing cumulative rewards while learning the best arm to play. However, with blocking constraints, the problem shifts—decisions made now affect future availability, making it harder to maintain an optimal strategy over time​.
+In this project, we aimed to extend the "Contextual Document Embeddings" model by introducing a query-adaptive approach. While the original model effectively contextualizes document embeddings by considering neighboring documents, it does not account for the user's needs expressed in the query, which is essential for information retrieval tasks.
+
+To achieve this, we developed two models to address this. The first model makes the document embedding query-adaptive, meaning that the document embedding is influenced by the query's embedding, following the same embedding method proposed in the original paper. However, upon reflection, we realized that the document embedding greatly depends on how the query is represented. This led us to develop a second model that computes the document embedding using multiple query embeddings, such as BERT and TF-IDF. The goal of this approach is to combine the strengths of different query embedding methods to create more robust and informative document embeddings. By leveraging multiple representations of the query, we aim to capture various aspects of the document-query relationship, improving the relevance of the information retrieval process.
 
 
 ## About the code
