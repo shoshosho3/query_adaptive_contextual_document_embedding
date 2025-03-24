@@ -6,7 +6,7 @@
 
 <p align="center">
   <em>
-    Query Adaptive Contextual Document Embedding
+    Query Adaptive Contextual Document Embeddings
   </em>
 </p>
 
