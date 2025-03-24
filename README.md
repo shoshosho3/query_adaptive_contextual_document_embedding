@@ -39,7 +39,7 @@
 ## About the article
 Our project is an extension on the following article:
 <blockquote>
-  <a href="https://arxiv.org/abs/2410.02525">Contextual Document Embedders</a> by John X. Morris and Alexander M. Rush.</blockquote>
+  <a href="https://arxiv.org/abs/2410.02525">Contextual Document Embeddings</a> by John X. Morris and Alexander M. Rush.</blockquote>
 
 The article "Contextual Document Embeddings" by John X. Morris and Alexander M. Rush from Cornell University proposes a method to improve document embeddings by incorporating context from surrounding documents. Traditional embeddings, which rely solely on the individual document, can be insufficient for highly specific information retrieval tasks. This paper addresses this by incorporating neighboring documents into the embedding process, making the representation more context-aware. The authors introduce a contextual training objective and an architecture that explicitly encodes information from neighboring documents, demonstrating improved performance in various scenarios.
 
