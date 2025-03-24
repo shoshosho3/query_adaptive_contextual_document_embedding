@@ -99,4 +99,4 @@ if __name__ == "__main__":
     # evaluating the models
     evaluate_models(args.dataset, doc_embeddings_tensor, test_query_embeddings_tensor,
                     test_query_embeddings_tensor_bert, test_query_embeddings_tensor_tfidf, test_queries, test_qrels,
-                    corpus, MultiEmbeddingsQueryAdaptiveCDE)
+                    corpus)

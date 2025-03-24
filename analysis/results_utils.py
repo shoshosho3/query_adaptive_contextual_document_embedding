@@ -2,12 +2,13 @@ import numpy as np
 import torch
 from torch.nn.functional import cosine_similarity
 from tqdm import tqdm
+from models.with_attention import MultiEmbeddingsQueryAdaptiveCDE
 import torch.nn.functional as F
 from sklearn.metrics import average_precision_score
 import pickle
 
 def evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
-                    test_query_embeddings_tfidf, test_queries, test_qrels, corpus, MultiEmbeddingsQueryAdaptiveCDE):
+                    test_query_embeddings_tfidf, test_queries, test_qrels, corpus):
 
     print("Evaluating the models...")
 
