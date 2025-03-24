@@ -6,7 +6,7 @@
 
 <p align="center">
   <em>
-    Query Adaptive Contextual Document Embedding
+    Query Adaptive Contextual Document Embeddings
   </em>
 </p>
 
@@ -39,7 +39,7 @@
 ## About the article
 Our project is an extension on the following article:
 <blockquote>
-  <a href="https://arxiv.org/abs/2410.02525">Contextual Document Embedders</a> by John X. Morris and Alexander M. Rush.</blockquote>
+  <a href="https://arxiv.org/abs/2410.02525">Contextual Document Embeddings</a> by John X. Morris and Alexander M. Rush.</blockquote>
 
 The article "Contextual Document Embeddings" by John X. Morris and Alexander M. Rush from Cornell University proposes a method to improve document embeddings by incorporating context from surrounding documents. Traditional embeddings, which rely solely on the individual document, can be insufficient for highly specific information retrieval tasks. This paper addresses this by incorporating neighboring documents into the embedding process, making the representation more context-aware. The authors introduce a contextual training objective and an architecture that explicitly encodes information from neighboring documents, demonstrating improved performance in various scenarios.
 
@@ -54,27 +54,22 @@ The code for this project is built upon the original implementation from the pap
 
 
 ## Implemented Files
-- **analysis**
+- **analysis**: This file is about the analysis of the experiment and evaluation of the models.
   - ### result_utils.py:
     - `calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids)`:Calculate MAP for the CDE and QACDE.
     - `calculate_multi_map(model, document_embeddings, query_embeddings, query_embeddings_bert, query_embeddings_tfidf, queries, qrels, doc_ids)`: Calculate MAP for MEQACDE.
     - `evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_queries, test_qrels, corpus)`: Calculate and prints the MAP results for the baseline model on the test set.
     - `evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert, test_query_embeddings_tfidf, test_queries, test_qrels, corpus)`: Calculate and prints the MAP results for QACDE & MEQACDE on the test set.
 
-- **simulations.py**
-  - ### BlockingBanditSimulation Class:
+- **data_load**: This file is about the downloading and the preprocessing of the datasets. We assume that the dataset name is correct.
+  - ### get_dataset.py:
+    - `def does_exist(dataset_name)`: Checks if the dataset has already been downloaded.
+    - `download_and_store(dataset_name)`: Downloads and stores the dataset in a local file.
+    - `get_dataset(dataset_name)`: Checks if the dataset exists and downloads it.
 
-    - `__init__(self, K, T, sim_type, fixed_delays, seed)`: Initializes the simulation with the number of arms, horizon, type of simulation, fixed delays, and a random seed.
-    - `generate_bandits(self)`: Generates bandit arms based on the type of simulation (small delays, large delays, or fixed delays).
-    - `oracle_greedy_algorithm(self)`: Selects the best available arm based on the oracle greedy algorithm and updates its state.
-    - `UCB_greedy_algorithm(self, timestamp)`: Implements the UCB greedy algorithm, selecting arms and updating their state based on the UCB index.
-    - `update_unavailable_arms(self)`: Decreases the blocking delay countdown for unavailable arms and makes them available when the delay ends.
-    - `simulate(self)`: Runs the simulation for T time steps, returning the cumulative rewards and the arms chosen by both algorithms.
-    - `calculate_cumulative_regret(self, ucb_arms)`: Computes the cumulative regret for the UCB algorithm.
-    - `reset_simulation(self)`: Resets the state of all arms, making them available for reuse.
-    - `calculate_k_star(self)`: Calculates the optimal number of arms, `K*`, based on the sum of inverse delays.
-    - `calculate_k_g(self, oracle_chosen_arms)`: Computes `K_g`, the number of arms used by the Oracle Greedy algorithm.
-
+  - ### get_split.py:
+    - ``
+ 
 - **main.py**
   - `parse_arguments()`: Parses the command-line arguments such as the number of arms, rounds, fixed delay, number of simulations, and seed.
   - `plot_graph_cumulative_rewards(simulation_types, results_values, algorithms, T, k_stars_types, k_g_types)`: Plots the cumulative rewards for different algorithms and simulation types.
