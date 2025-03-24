@@ -8,8 +8,24 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class QueryDataset(Dataset):
-    def __init__(self, document_embeddings, query_embeddings, queries, qrels, doc_ids, num_negatives=500,
-                 max_positives=50):
+    """
+    The class inherits the Dataset Class of the PyTorch library adapting this for our specific task with Query Adaptive
+    Model.
+    """
+    def __init__(self, document_embeddings: torch.Tensor, query_embeddings: torch.Tensor, queries: list, qrels: dict,
+                 doc_ids: list, num_negatives: int=500, max_positives: int=50):
+        """
+        Initializes the QueryDataset Class.
+
+        Args:
+            document_embeddings: Tensor of the documents embeddings by CDE method of shape (num_docs, embedding_dim).
+            query_embeddings: Tensor of the query embeddings by CDE method of shape (num_queries, embedding_dim).
+            queries: List of the query IDs.
+            qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
+            doc_ids: List of the documents IDs.
+            num_negatives: Number of negative sampling examples.
+            max_positives: Maximum number of positive examples.
+        """
         super(QueryDataset).__init__()
         self.document_embeddings = document_embeddings.to(device)
         self.query_embeddings = query_embeddings.to(device)
@@ -23,10 +39,27 @@ class QueryDataset(Dataset):
         self.valid_queries = [q for q in queries if
                               q in qrels and any(doc_id in self.doc_id_to_idx for doc_id in qrels[q])]
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """
+        Returns the length of the dataset, which is the number of valid queries with at least one relevant document.
+        """
         return len(self.valid_queries)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, int):
+        """
+        Retrieves the query embedding, positive and negative document embeddings for a given index.
+
+        Args:
+            idx (int): The index of the query to retrieve.
+
+        Returns:
+            tuple: A tuple containing:
+                - query_embedding (torch.Tensor): The embedding of the query.
+                - pos_doc_embeddings (torch.Tensor): The embeddings of relevant (positive) documents.
+                - neg_doc_embeddings (torch.Tensor): The embeddings of non-relevant (negative) documents.
+                - num_positives (int): The number of positive documents.
+        """
+
         query_id = self.valid_queries[idx]
         query_embedding = self.query_embeddings[self.queries.index(query_id)]
 
@@ -219,7 +252,7 @@ def train_query_adaptive_model(model, dataloader, criterion, optimizer, num_epoc
     model = model.to(device)
     model.train()
 
-    for epoch in range(num_epochs):
+    for _ in range(num_epochs):
         epoch_loss = 0.0
         batch_count = 0
 
@@ -259,7 +292,7 @@ def train_multi_embeddings_query_adaptive_model(model, dataloader, criterion, op
     model = model.to(device)
     model.train()
 
-    for epoch in range(num_epochs):
+    for _ in range(num_epochs):
         epoch_loss = 0.0
         batch_count = 0
 

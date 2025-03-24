@@ -14,12 +14,11 @@ def _prepare_multi_embeddings_training(doc_embeddings, train_query_embeddings, t
         doc_embeddings, train_query_embeddings,
         train_query_embeddings_bert, train_query_embeddings_tfidf,
         list(train_queries.keys()), train_qrels,
-        list(corpus.keys()), num_negatives=500, max_positives=5
-    )
+        list(corpus.keys()), num_negatives=500, max_positives=5)
+
     dataloader = DataLoader(
         dataset, batch_size=32, shuffle=True,
-        collate_fn=more_positive.multi_custom_collate_fn
-    )
+        collate_fn=more_positive.multi_custom_collate_fn)
     return dataset, dataloader
 
 
@@ -47,8 +46,7 @@ def _train_multi_embeddings_model(adaptive_model, dataloader, criterion, optimiz
 def _train_single_embeddings_model(adaptive_model, dataloader, criterion, optimizer, more_positive):
     """Helper function to train single embeddings model"""
     more_positive.train_query_adaptive_model(
-        adaptive_model, dataloader, criterion, optimizer, num_epochs=1
-    )
+        adaptive_model, dataloader, criterion, optimizer, num_epochs=1)
 
 
 def _evaluate_multi_embeddings_model(adaptive_model, doc_embeddings, test_query_embeddings,

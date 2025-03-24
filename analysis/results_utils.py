@@ -16,7 +16,7 @@ def evaluate_models(dataset_name: str, doc_embeddings: torch.Tensor, test_query_
 
     Args:
         dataset_name: Name of the dataset.
-        doc_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        doc_embeddings: Tensor of document embeddings by CDE method of shape (num_docs, embedding_dim).
         test_query_embeddings: Tensor of test query embeddings by CDE method of shape(num_queries, embedding_dim).
         test_query_embeddings_bert: Tensor of test query embeddings by BERT method of shape (num_queries, embedding_dim).
         test_query_embeddings_tfidf: Tensor of test query embeddings by TF-IDF method of shape (num_queries, embeddings_dim).
@@ -54,7 +54,7 @@ def evaluate_baseline(dataset_name: str, doc_embeddings: torch.Tensor, test_quer
 
     Args:
         dataset_name: Name of the dataset.
-        doc_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        doc_embeddings: Tensor of document embeddings by CDE method of shape (num_docs, embedding_dim).
         test_query_embeddings: Tensor of test query embeddings by CDE method of shape(num_queries, embedding_dim).
         test_queries: List of query IDs.
         test_qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
@@ -74,7 +74,7 @@ def calculate_map(model: QueryAdaptiveCDE, document_embeddings: torch.Tensor, qu
 
     Args:
         model: The trained query adaptive model.
-        document_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        document_embeddings: Tensor of document embeddings by CDE method of shape (num_docs, embedding_dim).
         query_embeddings: Tensor of query embeddings by CDE method of shape (num_queries, embedding_dim).
         queries: List of query IDs.
         qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
@@ -140,7 +140,7 @@ def calculate_multi_map(model: MultiEmbeddingsQueryAdaptiveCDE, document_embeddi
 
         Args:
             model: Trained multi-embeddings-query-adaptive model.
-            document_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+            document_embeddings: Tensor of document embeddings by CDE method of shape (num_docs, embedding_dim).
             query_embeddings: Tensor of query embeddings by the CDE method of shape (num_queries, embedding_dim).
             query_embeddings_bert: Tensor of query embeddings by the BERT method of shape (num_queries, embedding_dim).
             query_embeddings_tfidf: Tensor of query embeddings by the TF-IDF method of shape (num_queries, embedding_dim).
