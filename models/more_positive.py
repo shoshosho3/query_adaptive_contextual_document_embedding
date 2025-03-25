@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 from tqdm import tqdm
 from typing import Tuple
@@ -329,7 +329,7 @@ class MultiPositiveLoss(nn.Module):
         return loss.mean() + margin_loss
 
 
-def train_query_adaptive_model(model: QueryAdaptiveCDE, dataloader: Dataloader, criterion: torch.nn.Module,
+def train_query_adaptive_model(model: QueryAdaptiveCDE, dataloader: torch.utils.data.DataLoader, criterion: torch.nn.Module,
                                optimizer: torch.optim.Optimizer, num_epochs: int=30) -> QueryAdaptiveCDE:
     """
     Trains the Query Adaptive CDE model using the provided dataloader, loss function, and optimizer.
