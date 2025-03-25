@@ -53,7 +53,7 @@ The code for this project is built upon the original implementation from the pap
 
 
 ## Running Instructions
-This repository contains the code and instructions to run the experiment presented in the associated paper. Please follow the steps below to set up and run the experiment
+This repository contains the code and instructions to run the code. It is preferable to have acces to a Virtual Machine with a GPU because of the computational cost of the models.
 
 1. Download and install the dependencies by running the following command in your terminal:
 ```python
