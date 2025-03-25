@@ -1,5 +1,6 @@
 from torch.utils.data import DataLoader
 from models.more_positive import *
+from typing import Tuple
 
 
 def initial_prints(model):
@@ -9,7 +10,7 @@ def initial_prints(model):
 
 
 def _prepare_single_embeddings_training(doc_embeddings: torch.Tensor, train_query_embeddings:torch.Tensor,
-                                        train_queries:list, train_qrels: dict, corpus: dict) -> tuple(QueryDataset, DataLoader):
+                                        train_queries:list, train_qrels: dict, corpus: dict) -> Tuple[QueryDataset, DataLoader]:
     """
     Helper function to prepare single embeddings dataset and dataloader
 
@@ -32,8 +33,8 @@ def _prepare_single_embeddings_training(doc_embeddings: torch.Tensor, train_quer
 
 def _prepare_multi_embeddings_training(doc_embeddings: torch.Tensor, train_query_embeddings: torch.Tensor,
                                        train_query_embeddings_bert: torch.Tensor, train_query_embeddings_tfidf: torch.Tensor,
-                                       train_queries: dict, train_qrels: dict, corpus: dict) -> tuple(MultiEmbeddingsQueryDataset,
-                                                                                                      DataLoader):
+                                       train_queries: dict, train_qrels: dict, corpus: dict) -> Tuple[MultiEmbeddingsQueryDataset,
+                                                                                                      DataLoader]:
     """
     Helper function to prepare single embeddings dataset and dataloader
 
@@ -58,7 +59,7 @@ def _prepare_multi_embeddings_training(doc_embeddings: torch.Tensor, train_query
 
 
 def _train_single_embeddings_model(adaptive_model: torch.nn.Module, dataloader: DataLoader, criterion: torch.nn.Module,
-                                   optimizer: torch.optim.Optimizer):
+                                   optimizer: torch.optim.Optimizer) -> None:
     """
     Helper function to train single embeddings model.
 
@@ -72,7 +73,7 @@ def _train_single_embeddings_model(adaptive_model: torch.nn.Module, dataloader: 
 
 
 def _train_multi_embeddings_model(adaptive_model: torch.nn.Module, dataloader: DataLoader, criterion: torch.nn.Module,
-                                  optimizer: torch.optim.Optimizer):
+                                  optimizer: torch.optim.Optimizer) -> None:
     """
         Helper function to train single embeddings model.
 
@@ -137,7 +138,7 @@ def train_adaptive_cde(doc_embeddings: torch.Tensor, train_query_embeddings: tor
                        calculate_map: callable, save_model: callable, model_name: str="QACDE",
                        is_multi_embeddings: bool=False, train_query_embeddings_bert: torch.Tensor=None,
                        train_query_embeddings_tfidf: torch.Tensor=None, test_query_embeddings_bert: torch.Tensor=None,
-                       test_query_embeddings_tfidf: torch.Tensor=None):
+                       test_query_embeddings_tfidf: torch.Tensor=None) -> None:
     """
     Trains an adaptive CDE model using document embeddings and query embeddings (either single or multi-embeddings).
     The model is evaluated using Mean Average Precision (MAP) on a test set, and the best model is saved.

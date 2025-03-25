@@ -45,7 +45,7 @@ class GetSplit:
     ivar test: The test split of the dataset. Optional.
     """
 
-    def __init__(self, dataset_name: str):
+    def __init__(self, dataset_name: str) -> None:
         """
         Initializes the GetSplit class.
 

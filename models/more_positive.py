@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 from tqdm import tqdm
+from typing import Tuple
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -13,7 +14,7 @@ class QueryDataset(Dataset):
     The class inherits the Dataset Class of PyTorch library adapting this for our specific task for Query Adaptive Model.
     """
     def __init__(self, document_embeddings: torch.Tensor, query_embeddings: torch.Tensor, queries: list, qrels: dict,
-                 doc_ids: list, num_negatives: int=500, max_positives: int=50):
+                 doc_ids: list, num_negatives: int=500, max_positives: int=50) -> None:
         """
         Initializes the QueryDataset Class.
 
@@ -45,7 +46,7 @@ class QueryDataset(Dataset):
         """
         return len(self.valid_queries)
 
-    def __getitem__(self, idx: int) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, int):
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, int]:
         """
         Retrieves the query embedding, positive and negative document embeddings for a given index.
 
@@ -89,7 +90,7 @@ class MultiEmbeddingsQueryDataset(Dataset):
     """
     def __init__(self, document_embeddings: torch.Tensor, query_embeddings: torch.Tensor, query_embeddings_bert: torch.Tensor,
                  query_embeddings_tfidf: torch.Tensor, queries: list, qrels: dict, doc_ids: list, num_negatives: int=500,
-                 max_positives: int=50):
+                 max_positives: int=50) -> None:
         """
         Initializes the QueryDataset Class.
 
@@ -126,7 +127,7 @@ class MultiEmbeddingsQueryDataset(Dataset):
         """
         return len(self.valid_queries)
 
-    def __getitem__(self, idx) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int):
+    def __getitem__(self, idx) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int]:
         """
         Retrieves the query embedding, positive and negative document embeddings for a given index.
 
@@ -167,7 +168,7 @@ class MultiEmbeddingsQueryDataset(Dataset):
                len(relevant_doc_indices)
 
 
-def custom_collate_fn(batch: tuple) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor):
+def custom_collate_fn(batch: tuple) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Custom collate function to handle padding and mask creation for positive document embeddings in a batch for the
     Query Adaptive Model.
@@ -213,8 +214,8 @@ def custom_collate_fn(batch: tuple) -> tuple(torch.Tensor, torch.Tensor, torch.T
     return queries, pos_docs_padded, neg_docs, pos_masks
 
 
-def multi_custom_collate_fn(batch: tuple) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor,
-                                                          torch.Tensor, torch.Tensor):
+def multi_custom_collate_fn(batch: tuple) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor,
+                                                          torch.Tensor, torch.Tensor]:
     """
     Custom collate function to handle padding and mask creation for positive document embeddings in a batch for the
     Query Adaptive Model.
@@ -269,7 +270,7 @@ class MultiPositiveLoss(nn.Module):
     hard positive examples and encourage better separation between positive and negative scores.
     """
 
-    def __init__(self, temperature: float=0.1, margin: float=0.5, alpha: float=2.0):
+    def __init__(self, temperature: float=0.1, margin: float=0.5, alpha: float=2.0) -> None:
         """
         Initializes the MultiPositiveLoss class.
 
@@ -384,7 +385,7 @@ def train_query_adaptive_model(model: QueryAdaptiveCDE, dataloader: torch.utils.
 
 def train_multi_embeddings_query_adaptive_model(model: MultiEmbeddingsQueryAdaptiveCDE, dataloader: torch.utils.data.Dataloader,
                                                 criterion: torch.nn.Module, optimizer: torch.optim.Optimizer,
-                                                num_epochs: int=30):
+                                                num_epochs: int=30) -> None:
     """
     Trains the Multi-Embeddings-Query Adaptive CDE model using the provided dataloader, loss function, and optimizer.
 

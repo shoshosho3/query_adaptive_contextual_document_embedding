@@ -14,7 +14,7 @@ class MultiHeadAttention(nn.Module):
 
        This class allows the model to jointly attend to information from different representation subspaces at different positions.
        """
-    def __init__(self, embedding_dim: int, num_heads: int):
+    def __init__(self, embedding_dim: int, num_heads: int) -> None:
         """
         Initializes the MultiHeadAttention layer with the given embedding dimension and number of attention heads.
 
@@ -66,7 +66,7 @@ class QueryAdaptiveLayer(nn.Module):
     Implements a query-adaptive transformation layer using multi-head attention. This layer adjusts document embeddings
     based on query embeddings, allowing the model to learn representations that are influenced by the queries.
     """
-    def __init__(self, embedding_dim: int, hidden_dim: int, num_heads: int=4):
+    def __init__(self, embedding_dim: int, hidden_dim: int, num_heads: int=4) -> None:
         """
         Initializes the QueryAdaptiveLayer with attention and feed-forward networks.
 
@@ -122,7 +122,7 @@ class QueryAdaptiveCDE(nn.Module):
     query embeddings using the QueryAdaptiveLayer. This allows the model to create document embeddings that are
     influenced by the document, its context and the query.
     """
-    def __init__(self, embedding_dim: int, hidden_dim: int, num_heads: int=4):
+    def __init__(self, embedding_dim: int, hidden_dim: int, num_heads: int=4) -> None:
         """
         Initializes the QueryAdaptiveCDE model with a QueryAdaptiveLayer for query-based document embedding adaptation.
 
@@ -155,7 +155,8 @@ class MultiEmbeddingsQueryAdaptiveLayer(nn.Module):
     based on different query embeddings, allowing the model to learn representations that are influenced by the queries
     and to leverage the strengths of the different query embeddings.
     """
-    def __init__(self, embedding_dim: int, hidden_dim: int, query_embeddings_tensor_tfidf: torch.Tensor, num_heads: int=4):
+    def __init__(self, embedding_dim: int, hidden_dim: int, query_embeddings_tensor_tfidf: torch.Tensor,
+                 num_heads: int=4) -> None:
         """
         Initializes the MultiEmbeddingsQueryAdaptiveLayer with attention and feed-forward networks.
 
@@ -259,7 +260,7 @@ class MultiEmbeddingsQueryAdaptiveCDE(nn.Module):
     embeddings based on query embeddings using the MultiEmbeddingsQueryAdaptiveLayer. This allows the model to create
     document embeddings that are influenced by the document, its context and the several representations of the query.
     """
-    def __init__(self, embedding_dim: int, hidden_dim: int, query_embeddings_tfidf: torch.Tensor, num_heads: int=4):
+    def __init__(self, embedding_dim: int, hidden_dim: int, query_embeddings_tfidf: torch.Tensor, num_heads: int=4) -> None:
         """
         Initializes the QueryAdaptiveCDE model with a QueryAdaptiveLayer for query-based document embedding adaptation.
 

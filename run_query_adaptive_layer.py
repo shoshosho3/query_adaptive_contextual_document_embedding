@@ -35,7 +35,7 @@ if __name__ == "__main__":
     epochs = args.epochs
     hidden_dim = args.hidden_dim
 
-    # setting critertion for the loss
+    # setting criterion for the loss
     criterion = more_positive.MultiPositiveLoss()
 
     # setting the models
