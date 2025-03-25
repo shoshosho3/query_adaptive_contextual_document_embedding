@@ -28,9 +28,8 @@
 1. [About the Article](#link-of-the-article)
 2. [Project Overview](#project-overview)  
 3. [About the code](#about-the-code)
-4. [Implemented Files](#implemented-files)
-5. [Running Instructions](#running-instructions)  
-6. [Results & Comments](#results-&-comments)  
+4. [Running Instructions](#running-instructions)  
+5. [Results & Comments](#results-&-comments)  
 
 </details>
 
@@ -51,31 +50,6 @@ To achieve this, we developed two models. The first model, called Query Adaptive
 
 ## About the code
 The code for this project is built upon the original implementation from the paper. We first use the pre-trained model from the article to generate document and query embeddings. These embeddings are then utilized to train our own models. Our code handles the training and evaluation of both our query-adaptive models as well as the evaluation of the original model from the paper (which serves as our baseline). Additionally, it manages the query embedding generation using TF-IDF and BERT methods. The evaluation is conducted using Mean Average Precision (MAP), with the goal of comparing the performance of our models and the baseline across various BeIR datasets such as SciFact, FiQA, and NFCorpus. The training procedure includes contrastive negative sampling and a custom Loss function tailored to the specific training conditions, ensuring a thorough and meaningful comparison between the models.
-
-
-## Implemented Files
-- **analysis**: This file is about the analysis of the experiment and evaluation of the models.
-  - ### result_utils.py:
-    - `calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids)`:Calculate MAP for the CDE and QACDE.
-    - `calculate_multi_map(model, document_embeddings, query_embeddings, query_embeddings_bert, query_embeddings_tfidf, queries, qrels, doc_ids)`: Calculate MAP for MEQACDE.
-    - `evaluate_baseline(dataset_name, doc_embeddings, test_query_embeddings, test_queries, test_qrels, corpus)`: Calculate and prints the MAP results for the baseline model on the test set.
-    - `evaluate_models(dataset_name, doc_embeddings, test_query_embeddings, test_query_embeddings_bert, test_query_embeddings_tfidf, test_queries, test_qrels, corpus)`: Calculate and prints the MAP results for QACDE & MEQACDE on the test set.
-
-- **data_load**: This file is about the downloading and the preprocessing of the datasets. We assume that the dataset name is correct.
-  - ### get_dataset.py:
-    - `def does_exist(dataset_name)`: Checks if the dataset has already been downloaded.
-    - `download_and_store(dataset_name)`: Downloads and stores the dataset in a local file.
-    - `get_dataset(dataset_name)`: Checks if the dataset exists and downloads it.
-
-  - ### get_split.py:
-    - ``
- 
-- **main.py**
-  - `parse_arguments()`: Parses the command-line arguments such as the number of arms, rounds, fixed delay, number of simulations, and seed.
-  - `plot_graph_cumulative_rewards(simulation_types, results_values, algorithms, T, k_stars_types, k_g_types)`: Plots the cumulative rewards for different algorithms and simulation types.
-  - `plot_graph_cumulative_regrets(simulation_types, regrets_values, T, k_stars_types, k_g_types)`: Plots the cumulative regrets for the UCB algorithm across different simulation types.
-  - `deterministic_delays_simulations(simulation_types, K, T, fixed_delays, num_sims, seed)`: Runs the simulations for different types of delays and collects results on rewards and regrets.
-  - `__main__`: Parses the arguments, sets up the seed, and runs the deterministic delays simulations.
 
 
 ## Running Instructions
