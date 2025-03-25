@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
+from with_attention.py import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -9,8 +10,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class QueryDataset(Dataset):
     """
-    The class inherits the Dataset Class of the PyTorch library adapting this for our specific task with Query Adaptive
-    Model.
+    The class inherits the Dataset Class of PyTorch library adapting this for our specific task for Query Adaptive Model.
     """
     def __init__(self, document_embeddings: torch.Tensor, query_embeddings: torch.Tensor, queries: list, qrels: dict,
                  doc_ids: list, num_negatives: int=500, max_positives: int=50):
@@ -84,8 +84,26 @@ class QueryDataset(Dataset):
 
 
 class MultiEmbeddingsQueryDataset(Dataset):
-    def __init__(self, document_embeddings, query_embeddings, query_embeddings_bert, query_embeddings_tfidf, queries,
-                 qrels, doc_ids, num_negatives=500, max_positives=50):
+    """
+    The class inherits the Dataset Class of PyTorch library adapting this for our specific task for Query Adaptive Model.
+    """
+    def __init__(self, document_embeddings: torch.Tensor, query_embeddings: torch.Tensor, query_embeddings_bert: torch.Tensor,
+                 query_embeddings_tfidf: torch.Tensor, queries: list, qrels: dict, doc_ids: list, num_negatives: int=500,
+                 max_positives: int=50):
+        """
+        Initializes the QueryDataset Class.
+
+        Args:
+            document_embeddings: Tensor of the documents embeddings by CDE method of shape (num_docs, embedding_dim).
+            query_embeddings: Tensor of the query embeddings by CDE method of shape (num_queries, embedding_dim).
+            query_embeddings_bert: Tensor of the query embeddings by BERT method of shape (num_queries, embedding_dim).
+            query_embeddings_tfidf: Tensor of the query embeddings by TF-IDF method of shape (num_queries, embedding_dim).
+            queries: List of the query IDs.
+            qrels: Dictionary of shape {query_id: {relevant_doc_id1, relevant_doc_id2, ...}}.
+            doc_ids: List of the documents IDs.
+            num_negatives: Number of negative sampling examples.
+            max_positives: Maximum number of positive examples.
+        """
         super(MultiEmbeddingsQueryDataset).__init__()
         self.document_embeddings = document_embeddings.to(device)
         self.query_embeddings = query_embeddings.to(device)
@@ -102,10 +120,26 @@ class MultiEmbeddingsQueryDataset(Dataset):
         self.valid_queries = [q for q in queries if
                               q in qrels and any(doc_id in self.doc_id_to_idx for doc_id in qrels[q])]
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """
+        Returns the length of the dataset, which is the number of valid queries with at least one relevant document.
+        """
         return len(self.valid_queries)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int):
+        """
+        Retrieves the query embedding, positive and negative document embeddings for a given index.
+
+        Args:
+            idx (int): The index of the query to retrieve.
+
+        Returns:
+            tuple: A tuple containing:
+                - query_embedding (torch.Tensor): The embedding of the query.
+                - pos_doc_embeddings (torch.Tensor): The embeddings of relevant (positive) documents.
+                - neg_doc_embeddings (torch.Tensor): The embeddings of non-relevant (negative) documents.
+                - num_positives (int): The number of positive documents.
+        """
         query_id = self.valid_queries[idx]
 
         query_embedding = self.query_embeddings[self.queries.index(query_id)]
@@ -133,7 +167,21 @@ class MultiEmbeddingsQueryDataset(Dataset):
                len(relevant_doc_indices)
 
 
-def custom_collate_fn(batch):
+def custom_collate_fn(batch: tuple) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor):
+    """
+    Custom collate function to handle padding and mask creation for positive document embeddings in a batch for the
+    Query Adaptive Model.
+
+    Args:
+        batch: A list of tuples, where each tuple contains:
+
+        Returns:
+            tuple: A tuple containing:
+                - queries (torch.Tensor): Tensor of query embeddings by the CDE method of the batch.
+                - pos_docs_padded (torch.Tensor): Tensor of padded positive document embeddings of the batch.
+                - neg_docs (torch.Tensor): Tensor of negative document embeddings of the batch.
+                - pos_masks (torch.Tensor): Tensor of masks indicating the valid positive documents in each padded set.
+        """
     queries = torch.stack([item[0] for item in batch])
     max_pos_docs = 5
 
@@ -165,7 +213,22 @@ def custom_collate_fn(batch):
     return queries, pos_docs_padded, neg_docs, pos_masks
 
 
-def multi_custom_collate_fn(batch):
+def multi_custom_collate_fn(batch: tuple) -> tuple(torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor,
+                                                          torch.Tensor, torch.Tensor):
+    """
+    Custom collate function to handle padding and mask creation for positive document embeddings in a batch for the
+    Query Adaptive Model.
+
+    Args:
+        batch: A list of tuples, where each tuple contains:
+
+        Returns:
+            A tuple containing:
+                - queries (torch.Tensor): Tensor of query embeddings by the CDE method of the batch.
+                - pos_docs_padded (torch.Tensor): Tensor of padded positive document embeddings of the batch.
+                - neg_docs (torch.Tensor): Tensor of negative document embeddings of the batch.
+                - pos_masks (torch.Tensor): Tensor of masks indicating the valid positive documents in each padded set.
+        """
     queries = torch.stack([item[0] for item in batch])
     queries_bert = torch.stack([item[1] for item in batch])
     queries_tfidf = torch.stack([item[2] for item in batch])
@@ -201,54 +264,85 @@ def multi_custom_collate_fn(batch):
 
 
 class MultiPositiveLoss(nn.Module):
-    def __init__(self, temperature=0.1, margin=0.5, alpha=2.0):
+    """
+    Implements a custom loss that combines a probabilistic loss with focal weighting and a margin penalty to prioritize
+    hard positive examples and encourage better separation between positive and negative scores.
+    """
+
+    def __init__(self, temperature: float=0.1, margin: float=0.5, alpha: float=2.0):
+        """
+        Initializes the MultiPositiveLoss class.
+
+        Args:
+            temperature: Scaling factor for the logits to control the sharpness of the softmax distribution (default: 0.1).
+            margin: Margin to encourage positive scores to be higher than a set threshold (default: 0.5).
+            alpha: Focal-like exponent to give more weight to harder positive examples (default: 2.0).
+        """
         super(MultiPositiveLoss, self).__init__()
         self.temperature = temperature
         self.margin = margin
-        self.alpha = alpha  # Focal-like exponent
+        self.alpha = alpha
 
-    def forward(self, query_emb, pos_emb, neg_emb, pos_mask):
+    def forward(self, query_emb: torch.Tensor, pos_emb: torch.Tensor, neg_emb: torch.Tensor, pos_mask: torch.Tensor) \
+            -> torch.Tensor:
+        """
+        Computes the loss for query, positive, and negative embeddings using focal loss and margin-based penalty.
+
+        Args:
+            query_emb: Embeddings of the queries by CDE method of shape (batch_size, embedding_dim).
+            pos_emb: Embeddings of the positive (relevant) documents, shape (batch_size, num_pos, embedding_dim).
+            neg_emb: Embeddings of the negative (non-relevant) documents, shape (batch_size, num_neg, embedding_dim).
+            pos_mask: Mask for valid positive document embeddings, shape (batch_size, num_pos).
+
+        Returns:
+            The computed loss value.
+        """
         query_norm = F.normalize(query_emb, dim=-1)
         pos_norm = F.normalize(pos_emb, dim=-1)
         neg_norm = F.normalize(neg_emb, dim=-1)
 
-        # Compute cosine similarities
         pos_scores = torch.sum(query_norm.unsqueeze(1) * pos_norm, dim=-1)  # [batch_size, num_pos]
         neg_scores = torch.sum(query_norm.unsqueeze(1) * neg_norm, dim=-1)  # [batch_size, num_neg]
 
-        # Apply temperature scaling
         pos_scores = pos_scores / self.temperature
         neg_scores = neg_scores / self.temperature
 
-        # Mask out padding in positive documents
         pos_scores = pos_scores * pos_mask
 
-        # Compute max for numerical stability
         neg_max = torch.max(neg_scores, dim=1, keepdim=True)[0]
         exp_scores = torch.cat([pos_scores, neg_scores], dim=1)
         exp_scores = torch.exp(exp_scores - neg_max)
 
-        # Handle masked positives
         pos_exp_sum = torch.sum(exp_scores[:, :pos_scores.size(1)] * pos_mask, dim=1)
         neg_exp_sum = torch.sum(exp_scores[:, pos_scores.size(1):], dim=1)
 
-        # Compute probabilities
         epsilon = 1e-10
         pos_prob = (pos_exp_sum + epsilon) / (pos_exp_sum + neg_exp_sum + epsilon)
 
-        # **Focal-like weighting:** Punish low-ranked positives more
         pos_weight = (1 - pos_prob) ** self.alpha
 
-        # **Margin loss:** Encourage positive scores to be higher than a margin
         margin_loss = F.relu(self.margin - pos_scores) * pos_mask
         margin_loss = margin_loss.mean()
 
-        # Final loss: log-loss with focal weighting + margin penalty
         loss = -torch.log(pos_prob) * pos_weight
         return loss.mean() + margin_loss
 
 
-def train_query_adaptive_model(model, dataloader, criterion, optimizer, num_epochs=30):
+def train_query_adaptive_model(model: QueryAdaptiveCDE, dataloader: torch.utils.data.Dataloader, criterion: torch.nn.Module,
+                               optimizer: torch.optim.Optimizer, num_epochs: int=30) -> QueryAdaptiveCDE:
+    """
+    Trains the Query Adaptive CDE model using the provided dataloader, loss function, and optimizer.
+
+    Args:
+        model: The query adaptive model to be trained.
+        dataloader: DataLoader providing batches of query, positive, and negative document embeddings.
+        criterion: The loss function used to compute the training loss.
+        optimizer: The optimizer used for updating model weights.
+        num_epochs: The number of training epochs.
+
+    Returns:
+        The trained model.
+    """
     model = model.to(device)
     model.train()
 
@@ -288,7 +382,22 @@ def train_query_adaptive_model(model, dataloader, criterion, optimizer, num_epoc
     return model
 
 
-def train_multi_embeddings_query_adaptive_model(model, dataloader, criterion, optimizer, num_epochs=30):
+def train_multi_embeddings_query_adaptive_model(model: MultiEmbeddingsQueryAdaptiveCDE, dataloader: torch.utils.data.Dataloader,
+                                                criterion: torch.nn.Module, optimizer: torch.optim.Optimizer,
+                                                num_epochs: int=30):
+    """
+    Trains the Multi-Embeddings-Query Adaptive CDE model using the provided dataloader, loss function, and optimizer.
+
+    Args:
+        model: The multi-embeddings-query adaptive model to be trained.
+        dataloader: DataLoader providing batches of query, positive, and negative document embeddings.
+        criterion: The loss function used to compute the training loss.
+        optimizer: The optimizer used for updating model weights.
+        num_epochs: The number of training epochs.
+
+    Returns:
+        The trained model.
+    """
     model = model.to(device)
     model.train()
 
