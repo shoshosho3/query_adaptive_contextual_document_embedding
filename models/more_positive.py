@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
-from models.with_attention.py import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
+from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
