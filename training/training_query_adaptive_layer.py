@@ -133,7 +133,7 @@ def _evaluate_multi_embeddings_model(adaptive_model: torch.nn.Module, doc_embedd
 
 def train_adaptive_cde(doc_embeddings: torch.Tensor, train_query_embeddings: torch.Tensor,
                        test_query_embeddings: torch.Tensor, train_queries: dict, test_queries: dict, train_qrels: dict,
-                       test_qrels: dict, corpus: dict, num_epochs: int, adaptive_model: toch.nn.Module,
+                       test_qrels: dict, corpus: dict, num_epochs: int, adaptive_model: torch.nn.Module,
                        criterion: torch.nn.Module, optimizer: torch.optim.Optimizer, dataset_name: str,
                        calculate_map: callable, save_model: callable, model_name: str="QACDE",
                        is_multi_embeddings: bool=False, train_query_embeddings_bert: torch.Tensor=None,
