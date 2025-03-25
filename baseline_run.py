@@ -6,9 +6,10 @@ from pickle_utils import open_pickles
 
 
 if __name__ == "__main__":
-
     # getting the arguments
     args = get_args(for_query_adaptive_cde=False)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # getting the data path
     data_path = "datasets/" + args.dataset
@@ -18,8 +19,6 @@ if __name__ == "__main__":
     _, test_queries, test_qrels = GenericDataLoader(data_path).load(split="test")
     corpus_list = list(corpus.items())
 
-    # setting the device - not used at the moment!!!!!
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # getting the different embeddings
     doc_embeddings_tensor, train_query_embeddings_tensor, train_query_embeddings_tensor_bert, \

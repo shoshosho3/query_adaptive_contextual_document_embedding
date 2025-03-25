@@ -11,7 +11,6 @@ from pre_trained_cde.save_pre_trained import save_model
 
 
 if __name__ == "__main__":
-
     # getting the arguments
     args = get_args()
     torch.manual_seed(args.seed)
@@ -52,48 +51,24 @@ if __name__ == "__main__":
                                                                  lr=1e-5)
 
     # training the query adaptive model
-    train_adaptive_cde(doc_embeddings_tensor,
-                       train_query_embeddings_tensor,
-                       test_query_embeddings_tensor,
-                       queries_train,
-                       test_queries,
-                       qrels_train,
-                       test_qrels,
-                       corpus,
-                       epochs,
-                       query_adaptive_model,
-                       criterion,
-                       optimizer_query_adaptive,
-                       args.dataset,
-                       more_positive,
-                       calculate_map,
-                       save_model)
+    train_adaptive_cde(doc_embeddings=doc_embeddings_tensor, train_query_embeddings=train_query_embeddings_tensor,
+                       test_query_embeddings=test_query_embeddings_tensor, train_queries=queries_train,
+                       test_queries=test_queries, train_qrels=qrels_train, test_qrels=test_qrels, corpus=corpus,
+                       num_epochs=epochs, adaptive_model=query_adaptive_model, criterion=criterion,
+                       optimizer=optimizer_query_adaptive, dataset_name=args.dataset, calculate_map=calculate_map,
+                       save_model=save_model)
 
     # training the multi embeddings model
-    train_adaptive_cde(
-        doc_embeddings=doc_embeddings_tensor,
-        train_query_embeddings=train_query_embeddings_tensor,
-        test_query_embeddings=test_query_embeddings_tensor,
-        train_queries=queries_train,
-        test_queries=test_queries,
-        train_qrels=qrels_train,
-        test_qrels=test_qrels,
-        corpus=corpus,
-        num_epochs=epochs,
-        adaptive_model=multi_embeddings_query_adaptive_model,
-        criterion=criterion,
-        optimizer=optimizer_multi_embeddings_query_adaptive,
-        dataset_name=args.dataset,
-        more_positive=more_positive,
-        calculate_map=calculate_multi_map,
-        save_model=save_model,
-        model_name="MEQACDE",
-        is_multi_embeddings=True,
-        train_query_embeddings_bert=train_query_embeddings_tensor_bert,
-        train_query_embeddings_tfidf=train_query_embeddings_tensor_tfidf,
-        test_query_embeddings_bert=test_query_embeddings_tensor_bert,
-        test_query_embeddings_tfidf=test_query_embeddings_tensor_tfidf
-    )
+    train_adaptive_cde(doc_embeddings=doc_embeddings_tensor, train_query_embeddings=train_query_embeddings_tensor,
+                       test_query_embeddings=test_query_embeddings_tensor, train_queries=queries_train,
+                       test_queries=test_queries, train_qrels=qrels_train, test_qrels=test_qrels, corpus=corpus,
+                       num_epochs=epochs, adaptive_model=multi_embeddings_query_adaptive_model, criterion=criterion,
+                       optimizer=optimizer_multi_embeddings_query_adaptive, dataset_name=args.dataset,
+                       calculate_map=calculate_multi_map, save_model=save_model, model_name="MEQACDE",
+                       is_multi_embeddings=True, train_query_embeddings_bert=train_query_embeddings_tensor_bert,
+                       train_query_embeddings_tfidf=train_query_embeddings_tensor_tfidf,
+                       test_query_embeddings_bert=test_query_embeddings_tensor_bert,
+                       test_query_embeddings_tfidf=test_query_embeddings_tensor_tfidf)
 
 
     # evaluating the models

@@ -10,24 +10,25 @@ from warnings import filterwarnings
 
 filterwarnings("ignore")
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-dataset_name = args.dataset
+    dataset_name = args.dataset
 
-get_dataset(dataset_name)
-get_split = GetSplit(dataset_name)
+    get_dataset(dataset_name)
+    get_split = GetSplit(dataset_name)
 
-model = transformers.AutoModel.from_pretrained("jxm/cde-small-v1", trust_remote_code=True)
-tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = transformers.AutoModel.from_pretrained("jxm/cde-small-v1", trust_remote_code=True)
+    tokenizer = transformers.AutoTokenizer.from_pretrained("bert-base-uncased")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-stage_1_embeddings = run_stage_1(get_split.train[0], model, tokenizer, device)
+    stage_1_embeddings = run_stage_1(get_split.train[0], model, tokenizer, device)
 
-docs_tensor, train_tensor, dev_tensor, test_tensor = run_stage_2(get_split.train[0], model, tokenizer,
-                                                                 device, stage_1_embeddings, get_split)
+    docs_tensor, train_tensor, dev_tensor, test_tensor = run_stage_2(get_split.train[0], model, tokenizer,
+                                                                     device, stage_1_embeddings, get_split)
 
-save(docs_tensor, train_tensor, dev_tensor, test_tensor, dataset_name)
+    save(docs_tensor, train_tensor, dev_tensor, test_tensor, dataset_name)
 

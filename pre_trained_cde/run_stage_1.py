@@ -5,7 +5,7 @@ from tqdm import tqdm
 from pre_trained_cde.stages_utils import *
 
 
-def get_minicorpus(corpus, size: int) -> list:
+def get_minicorpus(corpus: dict, size: int) -> list:
     """
     Extracts a random subset of documents from the corpus.
 
@@ -60,14 +60,11 @@ def tokenize_1(tokenizer, documents: list, prefix: str, device, max_length: int 
     Args:
         tokenizer: Tokenizer object to process text.
         documents (list): List of documents as strings.
+        device: The hardware device (CPU or GPU) for computation.
         max_length (int): Maximum number of tokens per document (default: 512).
 
     Returns:
-        dict: A dictionary of PyTorch tensors with tokenized documents.
-        :param max_length:
-        :param tokenizer:
-        :param documents:
-        :param prefix: Prefix to add to each document.
+        A dictionary of PyTorch tensors with tokenized documents.
     """
     return tokenizer(
         [prefix + doc for doc in documents],
@@ -78,7 +75,7 @@ def tokenize_1(tokenizer, documents: list, prefix: str, device, max_length: int 
     ).to(device)
 
 
-def run_stage_1(corpus, model, tokenizer, device):
+def run_stage_1(corpus: dict, model, tokenizer, device) -> torch.Tensor:
     """
     Orchestrates the overall process of sampling a corpus, tokenizing it, and generating embeddings.
 
@@ -89,7 +86,7 @@ def run_stage_1(corpus, model, tokenizer, device):
         device: Device where computations will run (CPU/GPU).
 
     Returns:
-        torch.Tensor: A tensor of embeddings for the selected corpus.
+        A tensor of embeddings for the selected corpus.
     """
 
     # Step 1: Sample a "mini-corpus" based on the model configuration
