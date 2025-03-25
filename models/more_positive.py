@@ -383,7 +383,7 @@ def train_query_adaptive_model(model: QueryAdaptiveCDE, dataloader: torch.utils.
     return model
 
 
-def train_multi_embeddings_query_adaptive_model(model: MultiEmbeddingsQueryAdaptiveCDE, dataloader: torch.utils.data.Dataloader,
+def train_multi_embeddings_query_adaptive_model(model: MultiEmbeddingsQueryAdaptiveCDE, dataloader: torch.utils.data.DataLoader,
                                                 criterion: torch.nn.Module, optimizer: torch.optim.Optimizer,
                                                 num_epochs: int=30) -> None:
     """
