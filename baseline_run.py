@@ -13,7 +13,6 @@ if __name__ == "__main__":
 
     # getting the data path
     data_path = "datasets/" + args.dataset
-    torch.manual_seed(args.seed)
 
     # getting the data
     corpus, queries_train, qrels_train = GenericDataLoader(data_path).load(split="train")
