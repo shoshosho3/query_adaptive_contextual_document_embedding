@@ -55,26 +55,31 @@ The code for this project is built upon the original implementation from the pap
 ## Running Instructions
 This repository contains the code and instructions to run the code. It is preferable to have acces to a Virtual Machine with a GPU because of the computational cost of the models.
 
-1. Download and install the dependencies by running the following command in your terminal:
+1. If you have not VM, skip this step and go directly to step 2.
+Connect to the VM. Start the VM and run the following code in the terminal:
 ```python
-pip install -r requirements.txt
+ssh <user-name>@<host-name>
+```
+where <user-name> is your username and <host-name> is the public adress IP of the VM. Write your password to finish connection. 
+
+2. Enter in the project file via the following command on the terminal:
+```python
+cd query_adaptive_contextual_document_embedding
 ```
 
-2. Run the following command in your terminal to execute the experiment:
+3. First, run the module Python run_pre_trained_cde.py to save into pickle files the document and queries embeddings by the model of the article:
 ```python
-python "your_local_path"/project_files/main.py -K 20 -T 10000 -seed 42 -fixed_delay 10 -num_sim 250
+python run_pre_trained_cde.py --dataset <dataset_name>
 ```
-Those hyperparameters match exactly those of the paper's experiment.
+where <dataset_name> is a correct name of a dataset present in the Benchmark BEIR.
 
-4. You can modify the values of the following parameters to generate different simulations:
+4. Secondly, run the module compute_query_embeddings.py to save into pickle files the query embeddings for different method of embeddings.
+```python
+python compute_query_embeddings.py --dataset <dataset_name> --tfidf_max_dim <max_dim_emb>
+```
+where <dataset_name> is a correct name of a dataset present in the Benchmark BEIR and <max_dim_emb> represents the dimension maximal of the TF-IDF query embedding.
 
-- `-K`: The number of arms of the simulation. For example, `-K 20` will run a simulation with 20 arms.
-- `-T`: The time duration for each simulation in arbitrary units. For example, `-T 10000` will run each simulation for 10,000 timeslots.
-- `-seed`: The random seed for reproducibility. For example, `-seed 42` will set the seed to 42.
-- `-fixed_delay`: The value of the delay for the simulation with fixed delay. For example, `-fixed_delay 10` sets a fixed delay of 10 timeslots.
-- `-num_sim`: The number of individual simulations to run. For example, `-num_sim 250` will run 250 simulations.
-
-Feel free to adjust these values to explore different scenarios or to generate alternative results based on your preferences.
+5. Thirdly, run the module baseline_run.py 
 
 
 ## Results & Comments
