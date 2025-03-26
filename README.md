@@ -62,30 +62,35 @@ ssh <user-name>@<host-name>
 ```
 where <user-name> is your username and <host-name> is the public adress IP of the VM. Write your password to finish connection. 
 
-2. Enter in the project file via the following command on the terminal:
+2. Install all the dependencies via the requirements.txt file. Run this command on the terminal:
+```python
+pip install requirements.txt
+```
+
+3. Enter in the project file via the following command on the terminal:
 ```python
 cd query_adaptive_contextual_document_embedding
 ```
 
-3. First, run the module Python run_pre_trained_cde.py to save into pickle files the document and queries embeddings by the model of the article (CDE):
+4. First, run the module Python run_pre_trained_cde.py to save into pickle files the document and queries embeddings by the model of the article (CDE):
 ```python
 python run_pre_trained_cde.py --dataset <dataset_name>
 ```
 where <dataset_name> is a correct name of a dataset present in the Benchmark BEIR.
 
-4. Secondly, run the module compute_query_embeddings.py to save into pickle files the query embeddings for different methods of embeddings.
+5. Secondly, run the module compute_query_embeddings.py to save into pickle files the query embeddings for different methods of embeddings.
 ```python
 python compute_query_embeddings.py --dataset <dataset_name> --tfidf_max_dim <max_dim_emb>
 ```
 where <dataset_name> is a correct name of a dataset present in the Benchmark BEIR and <max_dim_emb> represents the dimension maximal of the TF-IDF query embedding.
 
-5. Thirdly, run the module baseline_run.py to obtain MAP results for the chosen dataset for the model of the article (CDE).
+6. Thirdly, run the module baseline_run.py to obtain MAP results for the chosen dataset for the model of the article (CDE).
 ```python
 python baseline_run.py --dataset <dataset_name> --index <index_num>
 ```
 where <dataset_name> is a correct name of a dataset present in the Benchmark BEIR and <index_num> is the index of the embeddings that we want to use. For each run on the same dataset, we increases the index by one. Run the code with the higher index (number of runs on the same dataset to avoid overwritings) to run the simulation that you begin.
 
-6. Fourthly, run the run_query_adaptive_layer.py to obtain MAP results for the chosen dataset for the QACDE and MEQACDE models.
+7. Fourthly, run the run_query_adaptive_layer.py to obtain MAP results for the chosen dataset for the QACDE and MEQACDE models.
 ```python
 python run_query_adaptive_layer.py --dataset <dataset_name> --index <index_num> --hidden_dim <hidden_dim> --epochs <num_epochs> --seed <seed>
 ```
