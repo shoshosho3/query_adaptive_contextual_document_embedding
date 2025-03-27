@@ -56,7 +56,6 @@ The code for this project is built upon the original implementation from the pap
 This repository contains the code and instructions to run the code. It is preferable to have acces to a Virtual Machine with a GPU because of the computational cost of the models.
 
 1. If you have not VM, skip this step and go directly to step 2.
-2. 
 Connect to the VM.
 Start the VM and run the following code in the terminal:
 ```python
