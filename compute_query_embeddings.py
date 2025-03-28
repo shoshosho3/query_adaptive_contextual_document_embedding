@@ -27,4 +27,5 @@ if __name__ == "__main__":
     query_tfidf_embedder = QueryTFIDFEmbedder(corpus=list(corpus.values()), train_queries=queries_train,
                                               max_dim=args.tfidf_max_dim, test_queries=queries_test)
 
-    save_queries_embeddings_pickle(dataset_name, [query_bert_embedder, query_tfidf_embedder], ["BERT", "TFIDF"], seed)
+    save_queries_embeddings_pickle(dataset_name, [query_bert_embedder, query_tfidf_embedder],
+                                   ["BERT", "TFIDF"], args.seed)
