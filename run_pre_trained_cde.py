@@ -7,7 +7,7 @@ from pre_trained_cde.save_pre_trained import save
 import transformers
 import torch
 from warnings import filterwarnings
-from utils.param_utils import set_seed
+from utils.param_utils import set_seed, exists
 
 filterwarnings("ignore")
 
