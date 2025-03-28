@@ -65,7 +65,7 @@ where <user-name> is your username and <host-name> is the public adress IP of th
 
 2. Install all the dependencies via the requirements.txt file. Run this command on the terminal:
 ```python
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 3. Enter in the project file via the following command on the terminal:
