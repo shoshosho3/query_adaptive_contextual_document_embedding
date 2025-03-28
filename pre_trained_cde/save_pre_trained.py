@@ -13,7 +13,7 @@ def save_model(model, model_name, dataset_name):
         pickle.dump(model, f)
 
 
-def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, index):
+def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, seed):
     """
     Saves embeddings for documents and queries into pickle files.
 
@@ -23,7 +23,7 @@ def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, i
         dev_queries (torch.Tensor): The tensor of validation/development query embeddings.
         test_queries (torch.Tensor): The tensor of test query embeddings.
         dataset_name (str): The name of the dataset being processed.
-        index (int): The current index, used in the filenames to organize data versions.
+        seed (int): The random seed.
 
     Saves:
         Four pickle files for document, training, validation, and test embeddings named
@@ -32,18 +32,18 @@ def save_pickles(docs, train_queries, dev_queries, test_queries, dataset_name, i
 
     check_directory(dataset_name)
 
-    with open(f'{dataset_name}/doc_embeddings_{dataset_name}_{index}.pkl', 'wb') as f:
+    with open(f'{dataset_name}/doc_embeddings_{dataset_name}_{seed}.pkl', 'wb') as f:
         pickle.dump(docs, f)
 
-    with open(f'{dataset_name}/query_embeddings_train_{dataset_name}_{index}.pkl', 'wb') as f:
+    with open(f'{dataset_name}/query_embeddings_train_{dataset_name}_{seed}.pkl', 'wb') as f:
         pickle.dump(train_queries, f)
 
     if dev_queries is not None:
-        with open(f'{dataset_name}/query_embeddings_dev_{dataset_name}_{index}.pkl', 'wb') as f:
+        with open(f'{dataset_name}/query_embeddings_dev_{dataset_name}_{seed}.pkl', 'wb') as f:
             pickle.dump(dev_queries, f)
 
     if test_queries is not None:
-        with open(f'{dataset_name}/query_embeddings_test_{dataset_name}_{index}.pkl', 'wb') as f:
+        with open(f'{dataset_name}/query_embeddings_test_{dataset_name}_{seed}.pkl', 'wb') as f:
             pickle.dump(test_queries, f)
 
 
@@ -81,7 +81,7 @@ def find_last_index(dataset_name):
             return index
 
 
-def save(docs, train_queries, dev_queries, test_queries, dataset_name):
+def save(docs, train_queries, dev_queries, test_queries, dataset_name, seed):
     """
     Normalizes and saves embeddings for documents and queries into versioned pickle files.
 
@@ -103,6 +103,6 @@ def save(docs, train_queries, dev_queries, test_queries, dataset_name):
     dev_query_tensor = normalize(dev_queries) if dev_queries else None
     test_query_tensor = normalize(test_queries) if test_queries else None
 
-    index = find_last_index(dataset_name)
+    # index = find_last_index(dataset_name)
 
-    save_pickles(docs_tensor, train_query_tensor, dev_query_tensor, test_query_tensor, dataset_name, index)
+    save_pickles(docs_tensor, train_query_tensor, dev_query_tensor, test_query_tensor, dataset_name, seed)

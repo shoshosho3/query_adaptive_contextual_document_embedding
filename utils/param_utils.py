@@ -18,3 +18,36 @@ def get_args(for_query_adaptive_cde=True):
         parser.add_argument("--seed", type=int, required=True, help="The seed of the program.")
 
     return parser.parse_args()
+
+
+def set_seed(seed):
+
+    """
+    Set the seed for the program.
+    :param seed: The seed to set.
+    """
+
+    import torch
+    import random
+    import numpy as np
+
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch.cuda.manual_seed_all(seed)
+
+
+def exists(dataset, seed):
+
+    """
+    Check if the dataset already exists.
+    :param dataset: The dataset to check.
+    :param seed: The seed to check.
+    :return: True if the dataset exists, False otherwise.
+    """
+
+    import os
+
+    return os.path.exists(f"{dataset}/doc_embeddings_{dataset}_{seed}")

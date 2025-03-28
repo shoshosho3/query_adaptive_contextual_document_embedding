@@ -3,7 +3,7 @@ from beir.datasets.data_loader import GenericDataLoader
 from models.with_attention import QueryAdaptiveCDE, MultiEmbeddingsQueryAdaptiveCDE
 from analysis.results_utils import evaluate_models, calculate_map, calculate_multi_map
 import models.more_positive as more_positive
-from utils.param_utils import get_args
+from utils.param_utils import get_args, set_seed
 from pickle_utils import open_pickles
 from consts import *
 from training.training_query_adaptive_layer import train_adaptive_cde
@@ -13,7 +13,7 @@ from pre_trained_cde.save_pre_trained import save_model
 if __name__ == "__main__":
     # getting the arguments
     args = get_args()
-    torch.manual_seed(args.seed)
+    set_seed(args.seed)
 
     # getting the data path
     data_path = "datasets/" + args.dataset

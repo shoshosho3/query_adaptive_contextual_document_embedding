@@ -7,16 +7,23 @@ from pre_trained_cde.save_pre_trained import save
 import transformers
 import torch
 from warnings import filterwarnings
+from utils.param_utils import set_seed
 
 filterwarnings("ignore")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, required=True, help="BEIR dataset name.")
+    parser.add_argument("--seed", type=int, required=True, help="The seed of the program.")
 
     args = parser.parse_args()
 
     dataset_name = args.dataset
+    set_seed(args.seed)
+
+    if exists(dataset_name, args.seed):
+        print("Already exists")
+        exit(0)
 
     get_dataset(dataset_name)
     get_split = GetSplit(dataset_name)

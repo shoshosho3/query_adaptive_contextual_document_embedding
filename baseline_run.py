@@ -4,8 +4,8 @@ from analysis.results_utils import evaluate_baseline
 from utils.param_utils import get_args
 from pickle_utils import open_pickles
 
-
 if __name__ == "__main__":
+
     # getting the arguments
     args = get_args(for_query_adaptive_cde=False)
 
@@ -18,7 +18,6 @@ if __name__ == "__main__":
     corpus, queries_train, qrels_train = GenericDataLoader(data_path).load(split="train")
     _, test_queries, test_qrels = GenericDataLoader(data_path).load(split="test")
     corpus_list = list(corpus.items())
-
 
     # getting the different embeddings
     doc_embeddings_tensor, train_query_embeddings_tensor, train_query_embeddings_tensor_bert, \
