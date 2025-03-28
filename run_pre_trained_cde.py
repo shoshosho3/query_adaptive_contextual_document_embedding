@@ -37,5 +37,5 @@ if __name__ == "__main__":
     docs_tensor, train_tensor, dev_tensor, test_tensor = run_stage_2(get_split.train[0], model, tokenizer,
                                                                      device, stage_1_embeddings, get_split)
 
-    save(docs_tensor, train_tensor, dev_tensor, test_tensor, dataset_name)
+    save(docs_tensor, train_tensor, dev_tensor, test_tensor, dataset_name, args.seed)
 
