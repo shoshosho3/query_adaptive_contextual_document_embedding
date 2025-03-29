@@ -152,6 +152,8 @@ def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, 
     if model:
         model.eval()
 
+    model = model.half()
+
     # Select device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
