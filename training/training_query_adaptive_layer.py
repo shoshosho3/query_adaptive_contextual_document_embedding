@@ -1,8 +1,6 @@
 from torch.utils.data import DataLoader
 from models.more_positive import *
 from typing import Tuple
-import random
-
 
 def initial_prints(model):
     print("*" * 40 + f" {model} " + "*" * 40)
@@ -105,11 +103,6 @@ def _evaluate_single_embeddings_model(adaptive_model: torch.nn.Module, doc_embed
             The Mean Average Precision (MAP) of the model on the test set.
     """
 
-    # choose randomly 10% of the queries indexes
-    random_indexes = random.sample(range(len(test_queries)), int(0.1 * len(test_queries)))
-    test_query_embeddings = test_query_embeddings[random_indexes]
-    test_queries = {list(test_queries.keys())[i]: test_queries[list(test_queries.keys())[i]] for i in random_indexes}
-    test_qrels = {list(test_qrels.keys())[i]: test_qrels[list(test_qrels.keys())[i]] for i in random_indexes}
 
     return calculate_map(adaptive_model, doc_embeddings, test_query_embeddings, list(test_queries.keys()), test_qrels,
                          list(corpus.keys()))
@@ -135,12 +128,6 @@ def _evaluate_multi_embeddings_model(adaptive_model: torch.nn.Module, doc_embedd
     Returns:
           The Mean Average Precision (MAP) of the model on the test set.
     """
-    random_indexes = random.sample(range(len(test_queries)), int(0.1 * len(test_queries)))
-    test_query_embeddings = test_query_embeddings[random_indexes]
-    test_queries = {list(test_queries.keys())[i]: test_queries[list(test_queries.keys())[i]] for i in random_indexes}
-    test_qrels = {list(test_qrels.keys())[i]: test_qrels[list(test_qrels.keys())[i]] for i in random_indexes}
-    test_query_embeddings_bert = test_query_embeddings_bert[random_indexes]
-    test_query_embeddings_tfidf = test_query_embeddings_tfidf[random_indexes]
 
     return calculate_map(adaptive_model, doc_embeddings, test_query_embeddings, test_query_embeddings_bert,
                          test_query_embeddings_tfidf, list(test_queries.keys()), test_qrels, list(corpus.keys()))
