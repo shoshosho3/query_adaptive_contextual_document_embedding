@@ -187,7 +187,7 @@ def calculate_map(model: 'QueryAdaptiveCDE', document_embeddings: torch.Tensor, 
             if model:
                 # Process documents in batches to avoid memory issues
                 adaptive_document_embeddings_list = []
-                doc_batch_size = 1024
+                doc_batch_size = 256
                 for j in range(0, num_docs, doc_batch_size):
                     batch_docs = document_embeddings[j:j + doc_batch_size]
                     batch_repeated_queries = repeated_query_embeddings[:, j:j + doc_batch_size, :]
