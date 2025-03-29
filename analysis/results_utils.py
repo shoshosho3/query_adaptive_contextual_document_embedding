@@ -138,10 +138,12 @@ def calculate_map(
     queries: list,
     qrels: dict,
     doc_ids: list,
-    batch_size: int = 128  # Process multiple queries at once
+    query_batch_size: int = 4,  # Small batch size to fit GPU
+    doc_batch_size: int = 8192,  # Process docs in chunks
+    use_fp16: bool = True  # Enable half precision if supported
 ) -> float:
     """
-    Optimized function to calculate Mean Average Precision (MAP).
+    Memory-efficient MAP calculation with query and document batching.
     """
     if model:
         model.eval()
@@ -152,33 +154,43 @@ def calculate_map(
     document_embeddings = document_embeddings.to(device)
     query_embeddings = query_embeddings.to(device)
 
+    if use_fp16 and torch.cuda.is_available():
+        document_embeddings = document_embeddings.half()
+        query_embeddings = query_embeddings.half()
+
     map_score = 0.0
     doc_id_to_idx = {doc_id: idx for idx, doc_id in enumerate(doc_ids)}
 
-    # Process queries in batches
     num_queries = len(queries)
-    for start in tqdm(range(0, num_queries, batch_size), desc="Processing Queries"):
-        end = min(start + batch_size, num_queries)
-        batch_query_ids = queries[start:end]
-        batch_query_embeddings = query_embeddings[start:end]
+    for q_start in tqdm(range(0, num_queries, query_batch_size), desc="Processing Queries"):
+        q_end = min(q_start + query_batch_size, num_queries)
+        batch_query_ids = queries[q_start:q_end]
+        batch_query_embeddings = query_embeddings[q_start:q_end]
 
         with torch.no_grad():
+            batch_query_embeddings = batch_query_embeddings.to(device)
+
             if model:
-                batch_query_embeddings = batch_query_embeddings.unsqueeze(1)  # Add singleton for broadcasting
-                document_embeddings_expanded = document_embeddings.unsqueeze(0).expand(batch_query_embeddings.shape[0], -1, -1)
-                batch_query_embeddings = batch_query_embeddings.expand(-1, document_embeddings.shape[0], -1)
-                adaptive_doc_embeddings = model(document_embeddings_expanded, batch_query_embeddings)
-            else:
-                adaptive_doc_embeddings = document_embeddings
+                # Process query embeddings first before document processing
+                batch_query_embeddings = model.query_adaptive_layer(batch_query_embeddings)
 
-            # Compute cosine similarity in a single operation
-            similarity_scores = F.cosine_similarity(
-                batch_query_embeddings.unsqueeze(2),  # (batch_size, num_docs, embedding_dim, 1)
-                adaptive_doc_embeddings.unsqueeze(1),  # (batch_size, 1, num_docs, embedding_dim)
-                dim=-1
-            ).squeeze()
+            similarity_scores = torch.zeros((len(batch_query_embeddings), len(doc_ids)), device=device)
 
-            similarity_scores = similarity_scores.cpu().numpy()
+            # Process documents in batches to avoid memory overload
+            for d_start in range(0, len(doc_ids), doc_batch_size):
+                d_end = min(d_start + doc_batch_size, len(doc_ids))
+                batch_docs = document_embeddings[d_start:d_end]
+
+                if model:
+                    batch_docs = model(batch_docs, batch_query_embeddings.unsqueeze(1))
+
+                batch_scores = F.cosine_similarity(
+                    batch_query_embeddings.unsqueeze(1), batch_docs.unsqueeze(0), dim=-1
+                )
+
+                similarity_scores[:, d_start:d_end] = batch_scores
+
+            similarity_scores = similarity_scores.cpu().numpy()  # Move to CPU
 
         # Compute AP for each query
         for i, query_id in enumerate(batch_query_ids):
@@ -190,6 +202,8 @@ def calculate_map(
             y_score = similarity_scores[i]
 
             map_score += average_precision_score(y_true, y_score)
+
+        torch.cuda.empty_cache()  # Free GPU memory
 
     map_score /= num_queries
     return map_score
