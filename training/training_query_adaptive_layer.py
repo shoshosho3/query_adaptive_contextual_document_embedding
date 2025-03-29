@@ -196,7 +196,7 @@ def train_adaptive_cde(doc_embeddings: torch.Tensor, train_query_embeddings: tor
                                                                 train_qrels, corpus)
 
             # Train the model
-            # _train_single_embeddings_model(adaptive_model, dataloader, criterion, optimizer)
+            _train_single_embeddings_model(adaptive_model, dataloader, criterion, optimizer)
 
             # Evaluate the model
             test_map_score = _evaluate_single_embeddings_model(adaptive_model, doc_embeddings, test_query_embeddings,
