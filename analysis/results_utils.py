@@ -152,14 +152,12 @@ def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, 
     if model:
         model.eval()
 
-    model = model.half()
-
     # Select device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Move embeddings to device & convert to float16 for efficiency
-    document_embeddings = document_embeddings.to(device).half()
-    query_embeddings = query_embeddings.to(device).half()
+    document_embeddings = document_embeddings.to(device)
+    query_embeddings = query_embeddings.to(device)
 
     # Create doc ID → index mapping
     doc_id_to_idx = {doc_id: idx for idx, doc_id in enumerate(doc_ids)}
