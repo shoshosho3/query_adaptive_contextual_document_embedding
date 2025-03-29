@@ -138,7 +138,7 @@ from sklearn.metrics import average_precision_score
 from tqdm import tqdm
 
 def calculate_map(model: 'QueryAdaptiveCDE', document_embeddings: torch.Tensor, query_embeddings: torch.Tensor,
-                             queries: list, qrels: dict, doc_ids: list, batch_size_queries: int = 32) -> float:
+                             queries: list, qrels: dict, doc_ids: list, batch_size_queries: int = 8) -> float:
     """
     Calculate Mean Average Precision (MAP) for the query-adaptive and the baseline model (optimized for speed).
 
