@@ -101,7 +101,7 @@ def calculate_map(model: QueryAdaptiveCDE, document_embeddings: torch.Tensor, qu
         query_embedding = query_embeddings[query_idx].to(device)
 
         with torch.no_grad():
-            batch_size = 1024
+            batch_size = 10000
             similarity_scores = []
 
             for i in range(0, len(document_embeddings), batch_size):
