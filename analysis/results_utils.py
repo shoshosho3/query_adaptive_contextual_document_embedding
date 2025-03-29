@@ -131,6 +131,12 @@ def evaluate_baseline(dataset_name: str, doc_embeddings: torch.Tensor, test_quer
 #     map_score /= len(queries)
 #     return map_score
 
+import torch
+import torch.nn.functional as F
+import numpy as np
+from sklearn.metrics import average_precision_score
+from tqdm import tqdm
+
 def calculate_map(model: 'QueryAdaptiveCDE', document_embeddings: torch.Tensor, query_embeddings: torch.Tensor,
                              queries: list, qrels: dict, doc_ids: list, batch_size_queries: int = 32) -> float:
     """
@@ -185,9 +191,9 @@ def calculate_map(model: 'QueryAdaptiveCDE', document_embeddings: torch.Tensor, 
                 for j in range(0, num_docs, doc_batch_size):
                     batch_docs = document_embeddings[j:j + doc_batch_size]
                     batch_repeated_queries = repeated_query_embeddings[:, j:j + doc_batch_size, :]
-                    adaptive_docs = model(batch_docs.unsqueeze(0).repeat(num_batch_queries, 1, 1).view(-1, batch_docs.shape[-1]),
-                                            batch_repeated_queries.view(-1, batch_docs.shape[-1]))
-                    adaptive_document_embeddings_list.append(adaptive_docs.view(num_batch_queries, -1, adaptive_docs.shape[-1]))
+                    adaptive_docs = model(batch_docs.unsqueeze(0).repeat(num_batch_queries, 1, 1).reshape(-1, batch_docs.shape[-1]),
+                                            batch_repeated_queries.reshape(-1, batch_docs.shape[-1]))
+                    adaptive_document_embeddings_list.append(adaptive_docs.reshape(num_batch_queries, -1, adaptive_docs.shape[-1]))
                 adaptive_document_embeddings = torch.cat(adaptive_document_embeddings_list, dim=1)
             else:
                 adaptive_document_embeddings = document_embeddings.unsqueeze(0).repeat(num_batch_queries, 1, 1)
