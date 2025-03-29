@@ -131,81 +131,81 @@ def evaluate_baseline(dataset_name: str, doc_embeddings: torch.Tensor, test_quer
 #     map_score /= len(queries)
 #     return map_score
 
-def calculate_map(
-    model: QueryAdaptiveCDE,
-    document_embeddings: torch.Tensor,
-    query_embeddings: torch.Tensor,
-    queries: list,
-    qrels: dict,
-    doc_ids: list,
-    query_batch_size: int = 4,  # Small batch size to fit GPU
-    doc_batch_size: int = 8192,  # Process docs in chunks
-    use_fp16: bool = True  # Enable half precision if supported
-) -> float:
+def calculate_map(model, document_embeddings, query_embeddings, queries, qrels, doc_ids, batch_size=512):
     """
-    Memory-efficient MAP calculation with query and document batching.
+    Calculate Mean Average Precision (MAP) for the query-adaptive and the baseline model.
+
+    Args:
+        model: The trained query-adaptive model.
+        document_embeddings: Tensor of document embeddings of shape (num_docs, embedding_dim).
+        query_embeddings: Tensor of query embeddings of shape (num_queries, embedding_dim).
+        queries: List of query IDs.
+        qrels: Dictionary mapping query_id to a set of relevant document IDs.
+        doc_ids: List of document IDs corresponding to document_embeddings.
+        batch_size: Number of documents to process per batch (default: 512).
+
+    Returns:
+        MAP score.
     """
+
+    # Ensure model is in evaluation mode
     if model:
         model.eval()
-        device = next(model.parameters()).device
-    else:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    document_embeddings = document_embeddings.to(device)
-    query_embeddings = query_embeddings.to(device)
+    # Select device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if use_fp16 and torch.cuda.is_available():
-        document_embeddings = document_embeddings.half()
-        query_embeddings = query_embeddings.half()
+    # Move embeddings to device & convert to float16 for efficiency
+    document_embeddings = document_embeddings.to(device).half()
+    query_embeddings = query_embeddings.to(device).half()
 
-    map_score = 0.0
+    # Create doc ID → index mapping
     doc_id_to_idx = {doc_id: idx for idx, doc_id in enumerate(doc_ids)}
 
-    num_queries = len(queries)
-    for q_start in tqdm(range(0, num_queries, query_batch_size), desc="Processing Queries"):
-        q_end = min(q_start + query_batch_size, num_queries)
-        batch_query_ids = queries[q_start:q_end]
-        batch_query_embeddings = query_embeddings[q_start:q_end]
+    map_score = 0.0
 
-        with torch.no_grad():
-            batch_query_embeddings = batch_query_embeddings.to(device)
+    # Iterate over queries
+    for query_idx, query_id in tqdm(enumerate(queries), total=len(queries), desc="Processing Queries"):
+        query_embedding = query_embeddings[query_idx].unsqueeze(0)  # Shape (1, embedding_dim)
 
-            if model:
-                # Process query embeddings first before document processing
-                batch_query_embeddings = model.query_adaptive_layer(batch_query_embeddings)
+        similarity_scores = []
 
-            similarity_scores = torch.zeros((len(batch_query_embeddings), len(doc_ids)), device=device)
-
-            # Process documents in batches to avoid memory overload
-            for d_start in range(0, len(doc_ids), doc_batch_size):
-                d_end = min(d_start + doc_batch_size, len(doc_ids))
-                batch_docs = document_embeddings[d_start:d_end]
+        with torch.no_grad():  # Disable gradient tracking for efficiency
+            for i in range(0, len(document_embeddings), batch_size):
+                batch_docs = document_embeddings[i:i + batch_size]  # Get batch of document embeddings
+                batch_query = query_embedding.expand(len(batch_docs), -1)  # Repeat query for batch
 
                 if model:
-                    batch_docs = model(batch_docs, batch_query_embeddings.unsqueeze(1))
+                    # Apply query-adaptive transformation
+                    adaptive_doc_embeddings = model.query_adaptive_layer(batch_docs, batch_query)
+                else:
+                    adaptive_doc_embeddings = batch_docs
 
-                batch_scores = F.cosine_similarity(
-                    batch_query_embeddings.unsqueeze(1), batch_docs.unsqueeze(0), dim=-1
-                )
+                # Compute cosine similarity
+                batch_scores = F.cosine_similarity(query_embedding, adaptive_doc_embeddings, dim=1)
+                similarity_scores.append(batch_scores)
 
-                similarity_scores[:, d_start:d_end] = batch_scores
+            # Concatenate similarity scores
+            similarity_scores = torch.cat(similarity_scores).cpu().numpy()
 
-            similarity_scores = similarity_scores.cpu().numpy()  # Move to CPU
+        # Get relevant document indices
+        relevant_doc_ids = qrels.get(query_id, set())
+        relevant_doc_indices = [doc_id_to_idx[doc_id] for doc_id in relevant_doc_ids if doc_id in doc_id_to_idx]
 
-        # Compute AP for each query
-        for i, query_id in enumerate(batch_query_ids):
-            relevant_doc_ids = qrels.get(query_id, set())
-            relevant_doc_indices = [doc_id_to_idx[doc_id] for doc_id in relevant_doc_ids if doc_id in doc_id_to_idx]
+        # Create ground truth and predicted scores
+        y_true = np.zeros(len(doc_ids))
+        y_true[relevant_doc_indices] = 1  # Mark relevant documents
 
-            y_true = np.zeros(len(doc_ids))
-            y_true[relevant_doc_indices] = 1
-            y_score = similarity_scores[i]
+        # Compute Average Precision (AP)
+        ap = average_precision_score(y_true, similarity_scores)
+        map_score += ap
 
-            map_score += average_precision_score(y_true, y_score)
+        # Clear CUDA cache periodically
+        if query_idx % 50 == 0:
+            torch.cuda.empty_cache()
 
-        torch.cuda.empty_cache()  # Free GPU memory
-
-    map_score /= num_queries
+    # Compute final MAP score
+    map_score /= len(queries)
     return map_score
 
 
