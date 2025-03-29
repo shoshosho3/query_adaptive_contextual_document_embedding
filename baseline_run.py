@@ -24,5 +24,8 @@ if __name__ == "__main__":
         train_query_embeddings_tensor_tfidf, test_query_embeddings_tensor, test_query_embeddings_tensor_bert, \
         test_query_embeddings_tensor_tfidf = open_pickles(args, for_query_adaptive_cde=False)
 
+    print(f'length of train_query_embeddings_tensor: {len(train_query_embeddings_tensor)}')
+    print(f'length of test_query_embeddings_tensor: {len(test_query_embeddings_tensor)}')
+
     evaluate_baseline(args.dataset, doc_embeddings_tensor, test_query_embeddings_tensor, test_queries, test_qrels,
                       corpus)
